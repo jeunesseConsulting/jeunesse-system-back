@@ -4,10 +4,15 @@ from rest_framework import status
 
 from user.services.user_services import UserService
 from user.serializer import UserSerializer
+from user.permissions import IsUserAuthenticated
+
+from rest_framework.permissions import IsAuthenticated
 
 
 class UserView(APIView):
 
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         users = UserService.query_all()

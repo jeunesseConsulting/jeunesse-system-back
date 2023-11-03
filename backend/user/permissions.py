@@ -1,15 +1,14 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import permissions
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from user.services.user_services import UserService
 
 
-class AuthorizationTokenView(APIView):
+class IsUserAuthenticated(permissions.BasePermission):
+    
 
-
-    def post(self, request):
+    def has_permission(self, request, view):
         email = request.data.get('email')
         password = request.data.get('password')
 
@@ -19,6 +18,10 @@ class AuthorizationTokenView(APIView):
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
 
-            return Response(data={'token':access_token}, status=status.HTTP_200_OK)
+            request.access_token = access_token
+
+            return True
+        
         else:
-            return Response(data={'message':'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+            return False
+

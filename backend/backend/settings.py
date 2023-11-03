@@ -130,3 +130,10 @@ SIMPLE_JWT = {
 }
 
 APPEND_SLASH = False
+
+AUTHENTICATION_BACKENDS = [
+    'user.custom_backend.CustomAuthenticationBackend'
+]
+
+AUTH_USER_MODEL = 'user.User'
+
