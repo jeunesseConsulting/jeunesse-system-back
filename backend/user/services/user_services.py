@@ -1,6 +1,5 @@
 from user.models import User
 from django.contrib.auth.hashers import make_password, check_password
-import bcrypt
 
 class UserService:
 

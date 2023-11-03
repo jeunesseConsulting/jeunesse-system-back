@@ -1,19 +1,16 @@
-from rest_framework.views import APIView
+from backend.abstracts.views import AuthenticatedAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from user.services.user_services import UserService
 from user.serializer import UserSerializer
-from user.permissions import IsUserAuthenticated
 
 from rest_framework.permissions import IsAuthenticated
 
 
-class UserView(APIView):
+class UserView(AuthenticatedAPIView):
 
-
-    permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         users = UserService.query_all()
         serializer = UserSerializer(users, many=True)
@@ -31,7 +28,7 @@ class UserView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetailView(APIView):
+class UserDetailView(AuthenticatedAPIView):
 
 
     def get(self, request, id):

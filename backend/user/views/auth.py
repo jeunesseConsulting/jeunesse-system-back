@@ -19,6 +19,6 @@ class AuthorizationTokenView(APIView):
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
 
-            return Response(data={'token':access_token}, status=status.HTTP_200_OK)
+            return Response(data={'token':access_token, 'user_id':user.id}, status=status.HTTP_200_OK)
         else:
             return Response(data={'message':'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
