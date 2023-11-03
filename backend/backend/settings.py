@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'rest_framework',
     'rest_framework_simplejwt',
-    'backend.user',
+    'backend.backend.user',
 ]
 
 MIDDLEWARE = [
