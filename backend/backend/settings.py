@@ -25,7 +25,7 @@ if DEBUG:
 else:
     DEV_DB = 'dev'
     PROD_DB = 'default'
-print(PROD_DB)
+
 ALLOWED_HOSTS = ['*']
 
 
