@@ -14,8 +14,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d1m#^o)0w-#gyad6pk*qx_o$pnt46&c(s&c600-=d7--yq$%7)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if int(os.environ.get('DEBUG')) == 1:
+    DEBUG = True
+else:
+    DEBUG = False
 
+if DEBUG:
+    DEV_DB = 'default'
+    PROD_DB = 'dev'
+else:
+    DEV_DB = 'dev'
+    PROD_DB = 'default'
+print(PROD_DB)
 ALLOWED_HOSTS = ['*']
 
 
@@ -33,6 +43,7 @@ INSTALLED_APPS += [
     'rest_framework',
     'rest_framework_simplejwt',
     'user',
+    'client',
 ]
 
 MIDDLEWARE = [
@@ -71,9 +82,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL')),
+    PROD_DB: dj_database_url.parse(os.environ.get('DATABASE_URL')),
 
-    'dev': {
+    DEV_DB: {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
