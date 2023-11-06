@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
+from roles.models import Role
+from permissions.models import Permissions
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -36,6 +39,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     document = models.CharField(max_length=20, null=False, blank=False)
     phone = models.CharField(max_length=20, null=False, blank=False)
     is_active = models.BooleanField(default=True)
+
+    role = models.ForeignKey(
+        Role,
+        related_name='role_id',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return self.email
