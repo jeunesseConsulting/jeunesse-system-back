@@ -31,5 +31,5 @@ class UserDetailSerializer(serializers.ModelSerializer):
         if obj.permissions.exists():
             return PermissionsSerializer(obj.permissions.all(), many=True).data
         else:
-            return None
+            return []
 
