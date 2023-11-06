@@ -5,6 +5,8 @@ from rest_framework import status
 from user.services.user_services import UserService
 from user.serializer import UserSerializer, UserDetailSerializer
 
+from permissions.models import Permissions
+
 
 class UserView(AuthenticatedAPIView):
 
