@@ -5,7 +5,7 @@ from rest_framework import status
 from user.services.user_services import UserService
 from user.serializer import UserSerializer, UserDetailSerializer
 
-from permissions.models import Permissions
+from django.contrib.auth.hashers import make_password
 
 
 class UserView(AuthenticatedAPIView):
@@ -43,6 +43,14 @@ class UserDetailView(AuthenticatedAPIView):
         
     def put(self, request, id):
         user = UserService.get(id)
+        
+        try:
+            password = request.data.get('password')
+        except:
+            pass
+
+        if password:
+            request.data['password'] = make_password(password)
 
         if user:
             serializer = UserSerializer(user, request.data, partial=True)
