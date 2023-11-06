@@ -44,6 +44,8 @@ INSTALLED_APPS += [
     'rest_framework_simplejwt',
     'user',
     'client',
+    'roles',
+    'permissions',
 ]
 
 MIDDLEWARE = [

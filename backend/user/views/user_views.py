@@ -3,7 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from user.services.user_services import UserService
-from user.serializer import UserSerializer
+from user.serializer import UserSerializer, UserDetailSerializer
+
+from permissions.models import Permissions
 
 
 class UserView(AuthenticatedAPIView):
@@ -11,7 +13,7 @@ class UserView(AuthenticatedAPIView):
     
     def get(self, request):
         users = UserService.query_all()
-        serializer = UserSerializer(users, many=True)
+        serializer = UserDetailSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -19,8 +21,9 @@ class UserView(AuthenticatedAPIView):
         serializer = UserSerializer(data=data)
 
         if serializer.is_valid():
-            UserService.create(**serializer.validated_data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = UserService.create(**serializer.validated_data)
+            response_serializer = UserDetailSerializer(user)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -33,7 +36,7 @@ class UserDetailView(AuthenticatedAPIView):
         user = UserService.get(id)
 
         if user:
-            serializer = UserSerializer(user)
+            serializer = UserDetailSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -45,7 +48,8 @@ class UserDetailView(AuthenticatedAPIView):
             serializer = UserSerializer(user, request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                response_serializer = UserDetailSerializer(user)
+                return Response(response_serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
