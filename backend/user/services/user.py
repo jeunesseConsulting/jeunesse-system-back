@@ -17,7 +17,7 @@ class UserService:
             return None
     
     @staticmethod
-    def create(name, last_name, email, password, person_type, document, phone, role=None, permissions=None):
+    def create(name, last_name, email, password, person_type, document, phone, role=None, permissions=None, gender=None):
         password = make_password(password)
 
         user = User.objects.create(
@@ -29,6 +29,7 @@ class UserService:
             document=document,
             phone=phone,
             role=role,
+            gender=gender
         )
 
         if permissions:

@@ -2,7 +2,7 @@ from backend.abstracts.views import AuthenticatedAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from roles.services.role_services import RoleService
+from roles.services.role import RoleService
 from roles.serializer import RoleSerializer
 
 

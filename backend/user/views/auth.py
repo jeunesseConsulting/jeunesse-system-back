@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from user.services.user_services import UserService
+from user.services.user import UserService
 
 
 class AuthorizationTokenView(APIView):

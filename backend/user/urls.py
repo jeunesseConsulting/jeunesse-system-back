@@ -1,6 +1,6 @@
 from django.urls import path
 
-from user.views.user_views import UserView, UserDetailView
+from user.views.user import UserView, UserDetailView
 from user.views.auth import AuthorizationTokenView
 
 

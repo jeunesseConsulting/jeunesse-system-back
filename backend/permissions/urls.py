@@ -1,6 +1,6 @@
 from django.urls import path
 
-from permissions.views.permission_views import PermissionsView, PermissionsDetailView
+from permissions.views.permission import PermissionsView, PermissionsDetailView
 
 
 urlpatterns = [
