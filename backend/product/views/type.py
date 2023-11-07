@@ -1,6 +1,4 @@
 from backend.abstracts.views import AuthenticatedAPIView, AuthenticatedDetailAPIView
-from rest_framework.response import Response
-from rest_framework import status
 
 from product.serializer import ProductTypeSerializer
 from product.services.type import ProductTypeServices
