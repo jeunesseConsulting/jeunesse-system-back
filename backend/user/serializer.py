@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'password', 'name', 'last_name', 'email', 'person_type', 'document', 'phone', 'is_active', 'role', 'permissions', 'gender']
+        fields = ['id', 'password', 'name', 'last_name', 'email', 'person_type', 'document', 'phone', 'is_active', 'role', 'permissions', 'gender', 'birth_date']
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'password', 'name', 'last_name', 'email', 'person_type', 'document', 'phone', 'is_active', 'role', 'permissions', 'gender']
+        fields = ['id', 'password', 'name', 'last_name', 'email', 'person_type', 'document', 'phone', 'is_active', 'role', 'permissions', 'gender', 'birth_date']
 
     def get_permissions(self, obj):
         if obj.permissions.exists():
