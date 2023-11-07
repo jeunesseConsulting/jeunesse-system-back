@@ -5,4 +5,5 @@ urlpatterns = [
     path('clients', include('client.urls'), name='client_app'),
     path('roles', include('roles.urls'), name='roles_app'),
     path('permissions', include('permissions.urls'), name='permissions_app'),
+    path('products', include('product.urls'), name='product_app'),
 ]

@@ -2,7 +2,7 @@ from backend.abstracts.views import AuthenticatedAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from user.services.user_services import UserService
+from user.services.user import UserService
 from user.serializer import UserSerializer, UserDetailSerializer
 
 from django.contrib.auth.hashers import make_password

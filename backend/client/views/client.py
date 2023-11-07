@@ -2,22 +2,22 @@ from backend.abstracts.views import AuthenticatedAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from permissions.services.permission_services import PermissionsServices
-from permissions.serializer import PermissionsSerializer
+from client.services.client import ClientServices
+from client.serializer import ClientSerializer
 
 
-class PermissionsView(AuthenticatedAPIView):
+class ClientView(AuthenticatedAPIView):
 
 
     def get(self, request):
-        permissions = PermissionsServices.query_all()
-        serializer = PermissionsSerializer(permissions, many=True)
+        clients = ClientServices.query_all()
+        serializer = ClientSerializer(clients, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
         data = request.data
-        serializer = PermissionsSerializer(data=data)
+        serializer = ClientSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
@@ -26,24 +26,23 @@ class PermissionsView(AuthenticatedAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
-class PermissionsDetailView(AuthenticatedAPIView):
+class ClientDetailView(AuthenticatedAPIView):
 
 
     def get(self, request, id):
-        permission = PermissionsServices.get(id)
+        client = ClientServices.get(id)
 
-        if permission:
-            serializer = PermissionsSerializer(permission)
+        if client:
+            serializer = ClientSerializer(client)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def put(self, request, id):
-        permission = PermissionsServices.get(id)
-        data = request.data
+        client = ClientServices.get(id)
 
-        if permission:
-            serializer = PermissionsSerializer(permission, data=data, partial=True)
+        if client:
+            serializer = ClientSerializer(client, request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -53,11 +52,10 @@ class PermissionsDetailView(AuthenticatedAPIView):
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def delete(self, request, id):
-        permission = PermissionsServices.get(id)
+        client = ClientServices.get(id)
 
-        if permission:
-            permission.delete()
-            return Response(data={'message':'permission deleted'}, status=status.HTTP_204_NO_CONTENT)
+        if client:
+            client.delete()
+            return Response(data={'message':'client deleted'}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
-

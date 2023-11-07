@@ -46,6 +46,7 @@ INSTALLED_APPS += [
     'client',
     'roles',
     'permissions',
+    'product',
 ]
 
 MIDDLEWARE = [

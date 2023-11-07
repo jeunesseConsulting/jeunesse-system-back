@@ -35,8 +35,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=255, null=False, blank=False)
     email = models.CharField(max_length=255, null=False, blank=False, unique=True)
     password = models.CharField(max_length=510, null=False, blank=False)
+    gender = models.CharField(max_length=1, null=True, blank=True)
     person_type = models.CharField(max_length=1, null=False, blank=False, default='P')
     document = models.CharField(max_length=40, null=False, blank=False)
+    birth_date = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=40, null=False, blank=False)
     is_active = models.BooleanField(default=True)
 
