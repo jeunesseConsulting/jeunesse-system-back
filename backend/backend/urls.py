@@ -8,4 +8,5 @@ urlpatterns = [
     path('products', include('product.urls'), name='product_app'),
     path('vehicles', include('vehicle.urls'), name='vehicle_app'),
     path('service-order', include('service_order.urls'), name='service_order_app'),
+    path('service', include('service.urls'), name='service_app'),
 ]

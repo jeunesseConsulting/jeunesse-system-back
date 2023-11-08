@@ -1,0 +1,1 @@
+from backend.abstracts.views import AuthenticatedAPIView, AuthenticatedDetailAPIView
