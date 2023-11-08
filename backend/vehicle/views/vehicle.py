@@ -22,6 +22,8 @@ class VehicleView(AuthenticatedAPIView):
             vehicle = self.model_service.get(serializer.instance.id)
             response_serializer = self.model_serializer(vehicle)
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     
 class VehicleDetailView(AuthenticatedDetailAPIView):
@@ -37,6 +39,7 @@ class VehicleDetailView(AuthenticatedDetailAPIView):
         if vehicle:
             serializer = VehicleCreateSerializer(vehicle, data=data, partial=True)
             if serializer.is_valid():
+                serializer.save()
                 vehicle = self.model_service.get(serializer.instance.id)
                 response_serializer = self.model_serializer(vehicle)
                 return Response(response_serializer.data, status=status.HTTP_200_OK)

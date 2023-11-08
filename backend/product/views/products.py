@@ -12,6 +12,17 @@ class ProductView(AuthenticatedAPIView):
     model_serializer = ProductSerializer
     model_service = ProductServices
 
+    def get(self, request):
+        products = self.model_service.query_all()
+        type_filter = request.query_params.get('type')
+
+        if type_filter:
+            products = products.filter(type=type_filter)
+        
+        serializer = self.model_serializer(products, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
         data = request.data
         serializer = ProductCreateSerializer(data=data)

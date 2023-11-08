@@ -11,7 +11,7 @@ class Vehicle(models.Model):
     brand = models.CharField(max_length=255, null=False, blank=False)
     model = models.CharField(max_length=255, null=False, blank=False)
     fabrication_year = models.CharField(max_length=4, null=False, blank=False)
-    vehicle_type = models.CharField(db_column='type', max_length=255, null=False, blank=False)
+    type = models.CharField(db_column='type', max_length=255, null=False, blank=False)
 
     owner = models.ForeignKey(
         User,
