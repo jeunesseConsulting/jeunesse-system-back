@@ -7,4 +7,5 @@ urlpatterns = [
     path('permissions', include('permissions.urls'), name='permissions_app'),
     path('products', include('product.urls'), name='product_app'),
     path('vehicles', include('vehicle.urls'), name='vehicle_app'),
+    path('service-order', include('service_order.urls'), name='service_order_app'),
 ]

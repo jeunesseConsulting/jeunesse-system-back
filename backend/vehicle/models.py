@@ -1,6 +1,6 @@
 from django.db import models
 
-from user.models import User
+from client.models import Client
 
 
 class Vehicle(models.Model):
@@ -14,7 +14,7 @@ class Vehicle(models.Model):
     type = models.CharField(db_column='type', max_length=255, null=False, blank=False)
 
     owner = models.ForeignKey(
-        User,
+        Client,
         on_delete=models.PROTECT,
         related_name='vehicle_owner',
         blank=False,
