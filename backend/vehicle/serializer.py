@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from vehicle.models import Vehicle
 
-from user.serializer import UserDetailSerializer
+from client.serializer import ClientSerializer
 
 
 class VehicleCreateSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class VehicleCreateSerializer(serializers.ModelSerializer):
 class VehicleSerializer(serializers.ModelSerializer):
 
 
-    owner = UserDetailSerializer()
+    owner = ClientSerializer()
 
     class Meta:
         model = Vehicle

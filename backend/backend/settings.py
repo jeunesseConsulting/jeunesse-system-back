@@ -49,6 +49,7 @@ INSTALLED_APPS += [
     'product',
     'vehicle',
     'service_order',
+    'service',
 ]
 
 MIDDLEWARE = [
