@@ -3,6 +3,7 @@ from django.db import models
 from client.models import Client
 from vehicle.models import Vehicle
 from service.aux_models import OrderServices
+from product.aux_models import OrderProducts
 
 
 class ServiceOrder(models.Model):
@@ -29,6 +30,12 @@ class ServiceOrder(models.Model):
     services = models.ManyToManyField(
         OrderServices,
         related_name='os_services',
+        blank=True
+    )
+
+    products = models.ManyToManyField(
+        OrderProducts,
+        related_name='os_products',
         blank=True
     )
 

@@ -26,4 +26,4 @@ class OrderServicesDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderServices
-        fields = '__all__'
+        fields = ['service', 'price']
