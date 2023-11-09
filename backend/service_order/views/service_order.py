@@ -75,3 +75,65 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
     model_serializer = ServiceOrderSerializer
     model_service = ServiceOrderServices
 
+    def put(self, request, id):
+        data = request.data
+        services_data = data.pop('services', [])
+        products_data = data.pop('products', [])
+        order_data = data.copy()
+        order = self.model_service.get(id)
+
+        if order:
+
+            #Setando os serviços novos
+            if services_data:
+                services = OrderServicesServices.filter_by_service_order_id(order.id)
+                for old_service in services:
+                    old_service.delete()
+
+                for service in services_data:
+                    service_serializer = OrderServicesSerializer(data={
+                        'service': service['id'],
+                        'order': order.id,
+                        'price': service['price']
+                    })
+                    if service_serializer.is_valid():
+                        service_serializer.save()
+                    else:
+                        return Response(service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+                order.services.set(OrderServicesServices.filter_by_service_order_id(order.id))
+
+            
+            #Setando os produtos novos
+            if products_data:
+                products = OrderProductsServices.filter_by_service_order_id(order.id)
+                for old_products in products:
+                    old_products.delete()
+
+                for product in products_data:
+                    product_serializer = OrderProductsCreateSerializer(data={
+                        'product': product['id'],
+                        'order': order.id,
+                        'quantity': product['quantity']
+                    })
+                    if product_serializer.is_valid():
+                        product_serializer.save()
+                    else:
+                        return Response(product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+                order.products.set(OrderProductsServices.filter_by_service_order_id(order.id))
+
+
+            #Setando o resto dos campos
+            if order_data:
+                serializer = ServiceOrderCreateSerializer(order, data=order_data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+            response_serializer = self.model_serializer(ServiceOrderServices.get(order.id))
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+        else:
+            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
