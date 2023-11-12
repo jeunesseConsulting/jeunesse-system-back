@@ -39,6 +39,9 @@ class ServiceOrder(models.Model):
         blank=True
     )
 
+    services_total_value = models.FloatField(default=0.0)
+    products_total_value = models.FloatField(default=0.0)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
