@@ -5,6 +5,8 @@ from rest_framework import status
 from client.services.client import ClientServices
 from client.serializer import ClientSerializer
 
+from vehicle.services.vehicle import VehicleServices
+
 
 class ClientView(AuthenticatedAPIView):
 
@@ -31,10 +33,30 @@ class ClientDetailView(AuthenticatedAPIView):
 
     def get(self, request, id):
         client = ClientServices.get(id)
+        vehicles_param = request.query_params.get('vehicles')
 
         if client:
             serializer = ClientSerializer(client)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            vehicles = 1
+            if vehicles_param == 'true':
+                data = serializer.data
+                vehicles = VehicleServices.client_vehicles(client.id)
+                vehicles_data = [
+                    {
+                        'id':vehicle.id,
+                        'plate':vehicle.plate,
+                        'color':vehicle.color,
+                        'brand':vehicle.brand,
+                        'model':vehicle.model,
+                        'fabrication_year':vehicle.fabrication_year,
+                        'type':vehicle.type
+                    }
+                    for vehicle in vehicles
+                ]
+                data['vehicles'] = vehicles_data
+                return Response(data=data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
