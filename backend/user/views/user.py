@@ -13,6 +13,18 @@ class UserView(AuthenticatedAPIView):
     
     def get(self, request):
         users = UserService.query_all()
+        active_filter = request.query_params.get('is_active')
+
+        if active_filter:
+            if active_filter == 'true':
+                users = users.filter(is_active=True)
+            elif active_filter == 'false':
+                users = users.filter(is_active=False)
+            elif active_filter != 'true' and active_filter != 'false':
+                return Response(data={'message':'invalid parameters'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                pass
+
         serializer = UserDetailSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
