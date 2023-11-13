@@ -41,7 +41,7 @@ class ServiceOrder(models.Model):
 
     services_total_value = models.FloatField(default=0.0)
     products_total_value = models.FloatField(default=0.0)
-    status = models.CharField(max_length=255, default='Pendente')
+    status = models.CharField(max_length=255, default='pendente')
 
     created_at = models.DateTimeField(auto_now_add=True)
 
