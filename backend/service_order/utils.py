@@ -1,19 +1,18 @@
+from babel.numbers import format_currency
+from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-import locale
 import base64
 from io import BytesIO
 
+def format_currency_babel(value, currency='BRL'):
+    return format_currency(value, currency, locale='pt_BR')
+
 def generate_service_order_pdf(order_data, mec_name):
     try:
-        # Configurar o locale para formatação de moeda
-        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
         buffer = BytesIO()
-
         document = SimpleDocTemplate(buffer, pagesize=letter)
 
         # Cores
@@ -112,14 +111,14 @@ def generate_service_order_pdf(order_data, mec_name):
             for service in order_data['services']:
                 price = service['price']
                 total_services_price += price
-                price_formatted = locale.currency(price, grouping=True)
+                price_formatted = format_currency_babel(price)
                 services_data.append([service['service']['name'], price_formatted])
 
             # Adicionar linha de Valor Total para serviços
-            services_data.append(["Valor Total", locale.currency(total_services_price, grouping=True)])
+            services_data.append(["Valor Total", format_currency_babel(total_services_price)])
         else:
             # Adicionar linha de Valor Total mesmo se não houver serviços
-            services_data.append(["Valor Total", locale.currency(0.0, grouping=True)])
+            services_data.append(["Valor Total", format_currency_babel(0.0)])
 
         # Ajuste da largura da coluna
         services_table = Table(services_data, colWidths=[4 * inch, 4 * inch])  # Ajuste na largura da coluna
@@ -145,16 +144,16 @@ def generate_service_order_pdf(order_data, mec_name):
         if order_data['products']:
             for product in order_data['products']:
                 quantity = product['quantity']
-                price_unit = locale.currency(product['product']['price'], grouping=True)
-                price_total = locale.currency(quantity * product['product']['price'], grouping=True)
+                price_unit = format_currency_babel(product['product']['price'])
+                price_total = format_currency_babel(quantity * product['product']['price'])
                 products_data.append([product['product']['name'], str(quantity), price_unit, price_total])
                 total_products_price += float(quantity) * product['product']['price']
 
             # Adicionar linha de Valor Total para produtos
-            products_data.append(["", "", "Valor Total", locale.currency(total_products_price, grouping=True)])
+            products_data.append(["", "", "Valor Total", format_currency_babel(total_products_price)])
         else:
             # Adicionar linha de Valor Total mesmo se não houver produtos
-            products_data.append(["", "", "Valor Total", locale.currency(0.0, grouping=True)])
+            products_data.append(["", "", "Valor Total", format_currency_babel(0.0)])
 
         products_table = Table(products_data, colWidths=[5 * inch, inch, inch, inch])
         products_table.setStyle(TableStyle([
