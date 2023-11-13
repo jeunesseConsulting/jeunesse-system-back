@@ -11,8 +11,14 @@ from product.services.order_products import OrderProductsServices
 
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from django.db import transaction
+
+from service_order.utils import generate_service_order_pdf
+
+from backend.settings import CLIENT_NAME
 
 
 class ServiceOrderView(AuthenticatedAPIView):
@@ -135,5 +141,24 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
             response_serializer = self.model_serializer(ServiceOrderServices.get(order.id))
             return Response(response_serializer.data, status=status.HTTP_200_OK)
 
+        else:
+            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class ServiceOrderPDFView(APIView):
+
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        os = ServiceOrderServices.get(id)
+
+        if os:
+            serializer = ServiceOrderSerializer(os)
+            pdf = generate_service_order_pdf(serializer.data, CLIENT_NAME)
+            return Response(data={
+                'service_order': int(id),
+                'pdf': pdf 
+            }, status=status.HTTP_200_OK)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
