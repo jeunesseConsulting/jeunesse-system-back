@@ -154,11 +154,14 @@ class ServiceOrderPDFView(APIView):
         os = ServiceOrderServices.get(id)
 
         if os:
-            serializer = ServiceOrderSerializer(os)
-            pdf = generate_service_order_pdf(serializer.data, CLIENT_NAME)
-            return Response(data={
-                'service_order': int(id),
-                'pdf': pdf 
-            }, status=status.HTTP_200_OK)
+            try:
+                serializer = ServiceOrderSerializer(os)
+                pdf = generate_service_order_pdf(serializer.data, CLIENT_NAME)
+                return Response(data={
+                    'service_order': int(id),
+                    'pdf': pdf 
+                }, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(data={'error': e}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
