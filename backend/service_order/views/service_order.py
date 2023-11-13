@@ -29,8 +29,17 @@ class ServiceOrderView(AuthenticatedAPIView):
 
     def get(self, request):
         orders = ServiceOrderServices.query_all()
-        serializer = self.model_serializer(orders, many=True)
+        status_filter = request.query_params.get('status')
+        client_filter = request.query_params.get('client')
 
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+
+        if client_filter:
+            orders = orders.filter(client=client_filter)
+
+        serializer = self.model_serializer(orders, many=True)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     @transaction.atomic
