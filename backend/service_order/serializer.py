@@ -2,10 +2,10 @@ from rest_framework import serializers
 
 from service_order.models import ServiceOrder
 
-from service.serializer import OrderServicesSerializer, OrderServicesDetailSerializer
+from service.serializer import OrderServicesDetailSerializer
 
 from client.serializer import ClientSerializer
-from vehicle.serializer import VehicleSerializer
+from vehicle.serializer import VehicleSerializer, VehicleOrderViewSerializer
 from product.serializer import OrderProductsSerializer
 
 
@@ -22,7 +22,7 @@ class ServiceOrderSerializer(serializers.ModelSerializer):
 
     services = serializers.SerializerMethodField()
     client = ClientSerializer()
-    vehicle = VehicleSerializer()
+    vehicle = VehicleOrderViewSerializer()
     products = serializers.SerializerMethodField()
 
     class Meta:
