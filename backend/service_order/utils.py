@@ -185,7 +185,11 @@ def generate_service_order_pdf(order_data, mec_name):
         created_paragraph = Paragraph(f'<b>Data de abertura da OS:</b> {created_at}', styles['Normal'])
         content.append(created_paragraph)
 
-        delivery_forecast = datetime.datetime.strptime(order_data["delivery_forecast"], "%Y-%m-%d").strftime("%d/%m/%Y")
+        if order_data["delivery_forecast"]:
+            delivery_forecast = datetime.datetime.strptime(order_data["delivery_forecast"], "%Y-%m-%d").strftime("%d/%m/%Y")
+        else:
+            delivery_forecast = "N/A"
+            
         delivery_paragraph = Paragraph(f'<b>Previsão de entrega:</b> {delivery_forecast}', styles["Normal"])
         content.append(delivery_paragraph)
 
