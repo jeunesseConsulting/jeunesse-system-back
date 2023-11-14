@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 from django.db import transaction
+from django.db.models import Sum
 
 from service_order.utils import generate_service_order_pdf
 
@@ -183,11 +184,39 @@ class ServiceOrderReportView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, initial_date, final_date):
+    def post(self, request):
         orders = ServiceOrderServices.query_all()
+        
+        initial_date = request.data.get('initial_date')
+        final_date = request.data.get('final_date')
 
-        if initial_date == '*' or final_date == '*':
+        if not initial_date and not final_date:
             pass
+
+        elif initial_date and not final_date:
+            try:
+                initial_date = datetime.datetime.strptime(initial_date, '%Y-%m-%d')
+                initial_date = datetime.datetime.combine(initial_date.date(), datetime.time(0, 0, 0))
+                final_date = datetime.datetime.now()
+                orders = orders.filter(created_at__range=(initial_date, final_date))
+            except Exception as e:
+                return Response(data={
+                    'messsage': 'invalid date parameter',
+                    'error': str(e)
+                })
+            
+        elif not initial_date and final_date:
+            try:
+                initial_date = datetime.datetime(1999, 1, 1, 0, 0, 0)
+                final_date = datetime.datetime.strptime(final_date, '%Y-%m-%d')
+                final_date = datetime.datetime.combine(final_date.date(), datetime.time(23, 59, 59))
+                orders = orders.filter(created_at__range=(initial_date, final_date))
+            except Exception as e:
+                return Response(data={
+                    'messsage': 'invalid date parameter',
+                    'error': str(e)
+                })
+            
         else:
             try:
                 initial_date = datetime.datetime.strptime(initial_date, '%Y-%m-%d')
@@ -196,22 +225,100 @@ class ServiceOrderReportView(APIView):
                 final_date = datetime.datetime.combine(final_date.date(), datetime.time(23, 59, 59))
                 orders = orders.filter(created_at__range=(initial_date, final_date))
             except Exception as e:
-                return Response(data={'message': 'invalid date parameter', 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        client_filter = request.query_params.get('client')
-        if client_filter:
-            orders = orders.filter(client__name__icontains=client_filter)
-
+                return Response(data={
+                    'messsage': 'invalid date parameter',
+                    'error': str(e)
+                })
+            
         status_filter = request.query_params.get('status')
         if status_filter:
-            orders = orders.filter(status__contains=status_filter)
+            ...
 
-        vehicle_filter = request.query_params.get('vehicle')
-        if vehicle_filter:
-            orders = orders.filter(vehicle__model__icontains=vehicle_filter)
 
+class ServiceOrderSummaryView(APIView):
+
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        orders = ServiceOrderServices.query_all()
         
+        initial_date = request.data.get('initial_date')
+        final_date = request.data.get('final_date')
 
-        serializer = ServiceOrderSerializer(orders, many=True)
+        if not initial_date and not final_date:
+            pass
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        elif initial_date and not final_date:
+            try:
+                initial_date = datetime.datetime.strptime(initial_date, '%Y-%m-%d')
+                initial_date = datetime.datetime.combine(initial_date.date(), datetime.time(0, 0, 0))
+                final_date = datetime.datetime.now()
+                orders = orders.filter(created_at__range=(initial_date, final_date))
+            except Exception as e:
+                return Response(data={
+                    'messsage': 'invalid date parameter',
+                    'error': str(e)
+                })
+            
+        elif not initial_date and final_date:
+            try:
+                initial_date = datetime.datetime(1999, 1, 1, 0, 0, 0)
+                final_date = datetime.datetime.strptime(final_date, '%Y-%m-%d')
+                final_date = datetime.datetime.combine(final_date.date(), datetime.time(23, 59, 59))
+                orders = orders.filter(created_at__range=(initial_date, final_date))
+            except Exception as e:
+                return Response(data={
+                    'messsage': 'invalid date parameter',
+                    'error': str(e)
+                })
+            
+        else:
+            try:
+                initial_date = datetime.datetime.strptime(initial_date, '%Y-%m-%d')
+                initial_date = datetime.datetime.combine(initial_date.date(), datetime.time(0, 0, 0))
+                final_date = datetime.datetime.strptime(final_date, '%Y-%m-%d')
+                final_date = datetime.datetime.combine(final_date.date(), datetime.time(23, 59, 59))
+                orders = orders.filter(created_at__range=(initial_date, final_date))
+            except Exception as e:
+                return Response(data={
+                    'messsage': 'invalid date parameter',
+                    'error': str(e)
+                })
+
+        status_list = [
+            'pendente',
+            'aprovada',
+            'andamento',
+            'reprovada',
+            'cancelada',
+            'concluida'
+        ]
+
+        data = {}
+
+        for status_value in status_list:
+            data[status_value] = {}
+            qty = orders.filter(status=status_value).count()
+            total_services = orders.filter(status=status_value).aggregate(Sum('services_total_value'))
+            total_products = orders.filter(status=status_value).aggregate(Sum('products_total_value'))
+
+            if total_services['services_total_value__sum'] is None:
+                total_services_value = 0.0
+            else:
+                total_services_value = total_services['services_total_value__sum']
+            
+            if total_products['products_total_value__sum'] is None:
+                total_products_value = 0.0
+            else:
+                total_products_value = total_products['products_total_value__sum']
+
+            data[status_value]['qty'] = qty
+            data[status_value]['total_services'] = total_services_value
+            data[status_value]['total_products'] = total_products_value
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+
+
