@@ -33,7 +33,7 @@ class ServiceOrderView(AuthenticatedAPIView):
         client_filter = request.query_params.get('client')
 
         if status_filter:
-            orders = orders.filter(status=status_filter)
+            orders = orders.filter(status__contains=status_filter)
 
         if client_filter:
             orders = orders.filter(client=client_filter)
@@ -174,3 +174,22 @@ class ServiceOrderPDFView(APIView):
                 return Response(data={'error': e}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ServiceOrderReportView(APIView):
+
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        orders = ServiceOrderServices.query_all()
+
+        client_filter = request.query_params.get('client')
+        if client_filter:
+            orders = orders.filter(client__name__icontains=client_filter)
+
+        
+
+        serializer = ServiceOrderSerializer(orders, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
