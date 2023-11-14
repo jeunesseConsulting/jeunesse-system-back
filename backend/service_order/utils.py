@@ -6,6 +6,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import base64
 from io import BytesIO
+import datetime
 
 def format_currency_babel(value, currency='BRL'):
     return format_currency(value, currency, locale='pt_BR')
@@ -16,8 +17,8 @@ def generate_service_order_pdf(order_data, mec_name):
         document = SimpleDocTemplate(buffer, pagesize=letter)
 
         # Cores
-        dark_blue = colors.HexColor('#001F3F')  # Azul escuro
-        light_blue = colors.HexColor('#7FDBFF')  # Azul claro
+        dark_blue = colors.HexColor('#0a3561')  # Azul escuro
+        light_blue = colors.HexColor('#8eb8fa')  # Azul claro
 
         # Criar estilos
         styles = getSampleStyleSheet()
@@ -28,18 +29,23 @@ def generate_service_order_pdf(order_data, mec_name):
             textColor=dark_blue,
             spaceAfter=12,
         )
-        light_blue_style = ParagraphStyle(
-            'LightBlueStyle',
-            parent=body_style,
-            textColor=light_blue,
-            spaceAfter=12,
-        )
+
         header_style = ParagraphStyle(
             'HeaderStyle',
             parent=styles['Heading1'],
             textColor=dark_blue,
             alignment=1,  # 0=left, 1=center, 2=right
             spaceAfter=12,
+            fontSize=26,
+            fontName='Helvetica-Bold',
+            italic=False,
+        )
+
+        comments_style = ParagraphStyle(
+            'CommentsStyle',  # Escolha um nome único para o estilo
+            parent=styles['Normal'],
+            fontSize=12,  # Ajuste o tamanho da fonte conforme necessário
+            spaceAfter=10,
         )
 
         # Criar conteúdo do PDF
@@ -69,7 +75,7 @@ def generate_service_order_pdf(order_data, mec_name):
             ('BACKGROUND', (0, 0), (-1, 0), dark_blue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
             ('BACKGROUND', (0, 1), (0, -1), light_blue),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
@@ -92,7 +98,7 @@ def generate_service_order_pdf(order_data, mec_name):
             ('BACKGROUND', (0, 0), (-1, 0), dark_blue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
             ('BACKGROUND', (0, 1), (0, -1), light_blue),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
@@ -126,7 +132,7 @@ def generate_service_order_pdf(order_data, mec_name):
             ('BACKGROUND', (0, 0), (-1, 0), dark_blue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
             ('BACKGROUND', (0, 1), (0, -1), light_blue),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
@@ -136,7 +142,7 @@ def generate_service_order_pdf(order_data, mec_name):
 
         # Adicionar produtos
         products_data = [
-            ["Produtos", "Quantidade", "Preço Unitário", "Preço Total"]
+            ["Produtos", "Quantidade", "UN","Preço Unitário", "Preço Total"]
         ]
 
         # Adicionar produtos à tabela, se houver algum
@@ -146,36 +152,45 @@ def generate_service_order_pdf(order_data, mec_name):
                 quantity = product['quantity']
                 price_unit = format_currency_babel(product['product']['price'])
                 price_total = format_currency_babel(quantity * product['product']['price'])
-                products_data.append([product['product']['name'], str(quantity), price_unit, price_total])
+                products_data.append([product['product']['name'], str(quantity), product['product']['measure_unit']['acronym'], price_unit, price_total])
                 total_products_price += float(quantity) * product['product']['price']
 
             # Adicionar linha de Valor Total para produtos
-            products_data.append(["", "", "Valor Total", format_currency_babel(total_products_price)])
+            products_data.append(["Valor Total", "", "", "", format_currency_babel(total_products_price)])
         else:
             # Adicionar linha de Valor Total mesmo se não houver produtos
-            products_data.append(["", "", "Valor Total", format_currency_babel(0.0)])
+            products_data.append(["", "", "", "Valor Total", format_currency_babel(0.0)])
 
-        products_table = Table(products_data, colWidths=[5 * inch, inch, inch, inch])
+        sec_col = 1
+        products_table = Table(products_data, colWidths=[4 * inch, sec_col * inch, sec_col * inch, sec_col * inch, sec_col * inch])
         products_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), dark_blue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
             ('BACKGROUND', (0, 1), (0, -1), light_blue),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
 
         content.append(products_table)
-        content.append(Spacer(1, 12))  # Espaço
+        content.append(Spacer(1, 24))  # Espaço
 
         if order_data.get('comments'):
             comments_text = order_data['comments']
-            comments_paragraph = Paragraph(f"<b>Observações:</b> {comments_text}", styles['Normal'])
+            comments_paragraph = Paragraph(f"<b>Observações:</b> {comments_text}", comments_style)
             content.append(comments_paragraph)
             content.append(Spacer(1, 12))  # Espaço
 
+        created_at = datetime.datetime.strptime(order_data["created_at"], "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%d/%m/%Y")
+        created_paragraph = Paragraph(f'<b>Data de abertura da OS:</b> {created_at}', styles['Normal'])
+        content.append(created_paragraph)
+
+        delivery_forecast = datetime.datetime.strptime(order_data["delivery_forecast"], "%Y-%m-%d").strftime("%d/%m/%Y")
+        delivery_paragraph = Paragraph(f'<b>Previsão de entrega:</b> {delivery_forecast}', styles["Normal"])
+        content.append(delivery_paragraph)
+
         # Adicionar rodapé com o status
-        footer = f"<b>Ordem de Serviço #{order_data['id']}</b><br/><b>Status:</b> {order_data.get('status', 'N/A')}"
+        footer = f"<b>Ordem de Serviço #{order_data['id']}</b><br/><br/><b>Status:</b> {str(order_data.get('status', 'N/A')).upper()}"
         content.append(Paragraph(footer, styles['Heading4']))
 
         # Adicionar conteúdo ao PDF
