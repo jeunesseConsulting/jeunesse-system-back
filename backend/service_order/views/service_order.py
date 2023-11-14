@@ -232,7 +232,19 @@ class ServiceOrderReportView(APIView):
             
         status_filter = request.query_params.get('status')
         if status_filter:
-            ...
+            orders = orders.filter(status__contains=status_filter)
+
+        client_filter = request.query_params.get('client')
+        if client_filter:
+            orders = orders.filter(client__name__icontains=client_filter)
+
+        vehicle_filter = request.query_params.get('vehicle')
+        if vehicle_filter:
+            orders = orders.filter(vehicle__model__icontains=vehicle_filter)
+
+        serializer = ServiceOrderSerializer(orders, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ServiceOrderSummaryView(APIView):
