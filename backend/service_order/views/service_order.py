@@ -20,6 +20,8 @@ from service_order.utils import generate_service_order_pdf
 
 from backend.settings import CLIENT_NAME
 
+import datetime
+
 
 class ServiceOrderView(AuthenticatedAPIView):
 
@@ -36,7 +38,7 @@ class ServiceOrderView(AuthenticatedAPIView):
             orders = orders.filter(status__contains=status_filter)
 
         if client_filter:
-            orders = orders.filter(client=client_filter)
+            orders = orders.filter(client__name__icontains=client_filter)
 
         serializer = self.model_serializer(orders, many=True)
         
@@ -181,12 +183,32 @@ class ServiceOrderReportView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, initial_date, final_date):
         orders = ServiceOrderServices.query_all()
+
+        if initial_date == '*' or final_date == '*':
+            pass
+        else:
+            try:
+                initial_date = datetime.datetime.strptime(initial_date, '%Y-%m-%d')
+                initial_date = datetime.datetime.combine(initial_date.date(), datetime.time(0, 0, 0))
+                final_date = datetime.datetime.strptime(final_date, '%Y-%m-%d')
+                final_date = datetime.datetime.combine(final_date.date(), datetime.time(23, 59, 59))
+                orders = orders.filter(created_at__range=(initial_date, final_date))
+            except Exception as e:
+                return Response(data={'message': 'invalid date parameter', 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         client_filter = request.query_params.get('client')
         if client_filter:
             orders = orders.filter(client__name__icontains=client_filter)
+
+        status_filter = request.query_params.get('status')
+        if status_filter:
+            orders = orders.filter(status__contains=status_filter)
+
+        vehicle_filter = request.query_params.get('vehicle')
+        if vehicle_filter:
+            orders = orders.filter(vehicle__model__icontains=vehicle_filter)
 
         
 
