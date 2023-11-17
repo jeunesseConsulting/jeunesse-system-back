@@ -4,6 +4,7 @@ from client.models import Client
 from vehicle.models import Vehicle
 from service.aux_models import OrderServices
 from product.aux_models import OrderProducts
+from payment_method.models import PaymentMethod
 
 
 class ServiceOrder(models.Model):
@@ -43,6 +44,16 @@ class ServiceOrder(models.Model):
     products_total_value = models.FloatField(default=0.0)
     status = models.CharField(max_length=255, default='pendente')
     delivery_forecast = models.DateField(blank=True, null=True)
+
+    payment_method = models.ForeignKey(
+        PaymentMethod,
+        on_delete=models.PROTECT,
+        related_name='os_payment_method',
+        null=True,
+        blank=True
+    )
+
+    installments = models.IntegerField(default=1)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
