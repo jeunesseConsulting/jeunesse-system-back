@@ -29,6 +29,7 @@ class VehicleOrderViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = [
+            'id',
             'plate',
             'color',
             'brand',
