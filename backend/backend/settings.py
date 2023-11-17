@@ -52,6 +52,7 @@ INSTALLED_APPS += [
     'vehicle',
     'service_order',
     'service',
+    'payment_method'
 ]
 
 MIDDLEWARE = [

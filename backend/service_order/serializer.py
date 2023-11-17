@@ -5,8 +5,9 @@ from service_order.models import ServiceOrder
 from service.serializer import OrderServicesDetailSerializer
 
 from client.serializer import ClientSerializer
-from vehicle.serializer import VehicleSerializer, VehicleOrderViewSerializer
+from vehicle.serializer import VehicleOrderViewSerializer
 from product.serializer import OrderProductsSerializer
+from payment_method.serializer import PaymentMethodSerializer
 
 
 class ServiceOrderCreateSerializer(serializers.ModelSerializer):
@@ -24,6 +25,7 @@ class ServiceOrderSerializer(serializers.ModelSerializer):
     client = ClientSerializer()
     vehicle = VehicleOrderViewSerializer()
     products = serializers.SerializerMethodField()
+    payment_method = PaymentMethodSerializer()
 
     class Meta:
         model = ServiceOrder
