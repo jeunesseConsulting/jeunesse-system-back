@@ -10,4 +10,5 @@ urlpatterns = [
     path('service-orders', include('service_order.urls'), name='service_order_app'),
     path('services', include('service.urls'), name='service_app'),
     path('payment-method', include('payment_method.urls'), name='payment_method'),
+    path('status', include('status.urls'), name='status_app'),
 ]
