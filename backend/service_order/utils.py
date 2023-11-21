@@ -245,7 +245,14 @@ def generate_service_order_pdf(order_data, mec_name):
     payment_paragraph = Paragraph(f'<b>Método de pagamento:</b> {payment_method}')
     content.append(payment_paragraph)
 
-    installments = order_data['installments']
+    try:
+        if order_data['installments']:
+            installments = order_data['installments']
+        else:
+            installments = 'N/A'
+    except:
+        installments = 'N/A'
+
     installments_paragraph = Paragraph(f'<b>Parcelas:</b> {installments}')
     content.append(installments_paragraph)
 
