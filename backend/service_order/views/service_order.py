@@ -34,12 +34,16 @@ class ServiceOrderView(AuthenticatedAPIView):
         orders = ServiceOrderServices.query_all()
         status_filter = request.query_params.get('status')
         client_filter = request.query_params.get('client')
+        client_id_filter = request.query_params.get('client_id')
 
         if status_filter:
             orders = orders.filter(status__contains=status_filter)
 
-        if client_filter:
+        if client_filter and not client_id_filter:
             orders = orders.filter(client__name__icontains=client_filter)
+
+        if client_id_filter:
+            orders = orders.filter(client=client_id_filter)
 
         serializer = self.model_serializer(orders, many=True)
         
