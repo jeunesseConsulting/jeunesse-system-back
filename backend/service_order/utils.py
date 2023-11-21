@@ -235,6 +235,28 @@ def generate_service_order_pdf(order_data, mec_name):
     content.append(created_paragraph)
 
     try:
+        if order_data['payment_method']:
+            payment_method = order_data['payment_method']['name']
+        else:
+            payment_method = 'N/A'
+    except:
+        payment_method = 'N/A'
+
+    payment_paragraph = Paragraph(f'<b>Método de pagamento:</b> {payment_method}')
+    content.append(payment_paragraph)
+
+    try:
+        if order_data['installments']:
+            installments = order_data['installments']
+        else:
+            installments = 'N/A'
+    except:
+        installments = 'N/A'
+
+    installments_paragraph = Paragraph(f'<b>Parcelas:</b> {installments}')
+    content.append(installments_paragraph)
+
+    try:
         if order_data["delivery_forecast"]:
             delivery_forecast = datetime.datetime.strptime(order_data["delivery_forecast"], "%Y-%m-%d").strftime("%d/%m/%Y")
         else:
