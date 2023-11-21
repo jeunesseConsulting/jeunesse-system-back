@@ -37,7 +37,7 @@ class ServiceOrderView(AuthenticatedAPIView):
         client_id_filter = request.query_params.get('client_id')
 
         if status_filter:
-            orders = orders.filter(status__contains=status_filter)
+            orders = orders.filter(status=status_filter)
 
         if client_filter and not client_id_filter:
             orders = orders.filter(client__name__icontains=client_filter)

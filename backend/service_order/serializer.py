@@ -8,6 +8,7 @@ from client.serializer import ClientSerializer
 from vehicle.serializer import VehicleOrderViewSerializer
 from product.serializer import OrderProductsSerializer
 from payment_method.serializer import PaymentMethodSerializer
+from status.serializer import StatusSerializer
 
 
 class ServiceOrderCreateSerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class ServiceOrderSerializer(serializers.ModelSerializer):
     vehicle = VehicleOrderViewSerializer()
     products = serializers.SerializerMethodField()
     payment_method = PaymentMethodSerializer()
+    status = StatusSerializer()
 
     class Meta:
         model = ServiceOrder
