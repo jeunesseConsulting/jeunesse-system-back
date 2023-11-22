@@ -3,7 +3,7 @@ from backend.abstracts.views import AuthenticatedAPIView, AuthenticatedDetailAPI
 from service_order.serializer import ServiceOrderSerializer, ServiceOrderCreateSerializer
 from service_order.services.service_order import ServiceOrderServices
 
-from service.serializer import OrderServicesSerializer
+from service.serializer import OrderServicesSerializer, ServiceSerializer
 from service.services.order_services import OrderServicesServices
 
 from product.serializer import OrderProductsCreateSerializer
@@ -37,7 +37,7 @@ class ServiceOrderView(AuthenticatedAPIView):
         client_id_filter = request.query_params.get('client_id')
 
         if status_filter:
-            orders = orders.filter(status__contains=status_filter)
+            orders = orders.filter(status=status_filter)
 
         if client_filter and not client_id_filter:
             orders = orders.filter(client__name__icontains=client_filter)
@@ -61,8 +61,22 @@ class ServiceOrderView(AuthenticatedAPIView):
             order_instance = serializer.save()
 
             for service in services_data:
+                try:
+                    id = service['id']
+                except:
+                    new_service_serializer = ServiceSerializer(data={
+                        'name': service['name'],
+                        'standard_value': service['price']
+                    })
+                    if new_service_serializer.is_valid():
+                        new_service_serializer.save()
+                        service_instance = new_service_serializer.instance
+                        id = service_instance.id
+                    else:
+                        return Response(new_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
                 service_serializer = OrderServicesSerializer(data={
-                    'service': service['id'],
+                    'service': id,
                     'order': order_instance.id,
                     'price': service['price']
                 })

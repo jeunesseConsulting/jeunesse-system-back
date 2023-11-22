@@ -268,7 +268,12 @@ def generate_service_order_pdf(order_data, mec_name):
     content.append(delivery_paragraph)
 
         # Adicionar rodapé com o status
-    footer = f"<b>Ordem de Serviço #{order_data['id']}</b><br/><br/><b>Status:</b> {str(order_data.get('status', 'N/A')).upper()}"
+    try:
+        status = order_data['status']['name']
+    except:
+        status = 'N/A'
+
+    footer = f"<b>Ordem de Serviço #{order_data['id']}</b><br/><br/><b>Status:</b> {str(status).upper()}"
     content.append(Paragraph(footer, styles['Heading4']))
 
         # Adicionar conteúdo ao PDF

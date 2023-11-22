@@ -5,6 +5,7 @@ from vehicle.models import Vehicle
 from service.aux_models import OrderServices
 from product.aux_models import OrderProducts
 from payment_method.models import PaymentMethod
+from status.models import Status
 
 
 class ServiceOrder(models.Model):
@@ -42,7 +43,15 @@ class ServiceOrder(models.Model):
 
     services_total_value = models.FloatField(default=0.0)
     products_total_value = models.FloatField(default=0.0)
-    status = models.CharField(max_length=255, default='pendente')
+
+    status = models.ForeignKey(
+        Status,
+        on_delete=models.PROTECT,
+        related_name='os_status',
+        null=True,
+        blank=True
+    )
+
     delivery_forecast = models.DateField(blank=True, null=True)
 
     payment_method = models.ForeignKey(
