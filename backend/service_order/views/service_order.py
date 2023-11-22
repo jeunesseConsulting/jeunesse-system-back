@@ -9,6 +9,8 @@ from service.services.order_services import OrderServicesServices
 from product.serializer import OrderProductsCreateSerializer
 from product.services.order_products import OrderProductsServices
 
+from status.services.status import StatusServices
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -316,22 +318,15 @@ class ServiceOrderSummaryView(APIView):
                     'error': str(e)
                 })
 
-        status_list = [
-            'pendente',
-            'aprovada',
-            'andamento',
-            'reprovada',
-            'cancelada',
-            'concluida'
-        ]
+        status_list = StatusServices.query_all()
 
         data = {}
 
-        for status_value in status_list:
-            data[status_value] = {}
-            qty = orders.filter(status=status_value).count()
-            total_services = orders.filter(status=status_value).aggregate(Sum('services_total_value'))
-            total_products = orders.filter(status=status_value).aggregate(Sum('products_total_value'))
+        for status_instance in status_list:
+            data[status_instance.name] = {}
+            qty = orders.filter(status=status_instance.id).count()
+            total_services = orders.filter(status=status_instance.id).aggregate(Sum('services_total_value'))
+            total_products = orders.filter(status=status_instance.id).aggregate(Sum('products_total_value'))
 
             if total_services['services_total_value__sum'] is None:
                 total_services_value = 0.0
@@ -343,9 +338,9 @@ class ServiceOrderSummaryView(APIView):
             else:
                 total_products_value = total_products['products_total_value__sum']
 
-            data[status_value]['qty'] = qty
-            data[status_value]['total_services'] = total_services_value
-            data[status_value]['total_products'] = total_products_value
+            data[status_instance.name]['qty'] = qty
+            data[status_instance.name]['total_services'] = total_services_value
+            data[status_instance.name]['total_products'] = total_products_value
 
         return Response(data=data, status=status.HTTP_200_OK)
 
