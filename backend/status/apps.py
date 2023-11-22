@@ -1,6 +1,5 @@
 from django.apps import AppConfig
-from django.db.models.signals import post_migrate
-from django.dispatch import receiver
+from django.db import connection
 
 
 class StatusConfig(AppConfig):
@@ -8,8 +7,11 @@ class StatusConfig(AppConfig):
     name = 'status'
 
     def ready(self):
-        @receiver(post_migrate)
-        def populate_status_table(sender, **kwargs):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM status;")
+            record_count = cursor.fetchone()[0]
+
+        if record_count < 7:
             from status.models import Status
 
             status_list = [
@@ -18,14 +20,13 @@ class StatusConfig(AppConfig):
                 'Andamento',
                 'Reprovada',
                 'Cancelada',
-                'Concluída'
+                'Concluída',
+                'Pendente Retirada',
             ]
-
-            Status.objects.all().delete()
 
             for obj in status_list:
                 try:
-                    Status.objects.create(name=obj)
+                    Status.objects.get_or_create(name=obj)
                 except:
                     pass
 
