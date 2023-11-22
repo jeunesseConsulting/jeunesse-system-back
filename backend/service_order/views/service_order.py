@@ -129,8 +129,22 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
                     old_service.delete()
 
                 for service in services_data:
+                    try:
+                        id = service['id']
+                    except:
+                        new_service_serializer = ServiceSerializer(data={
+                            'name': service['name'],
+                            'standard_value': service['price']
+                        })
+                        if new_service_serializer.is_valid():
+                            new_service_serializer.save()
+                            service_instance = new_service_serializer.instance
+                            id = service_instance.id
+                        else:
+                            return Response(new_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
                     service_serializer = OrderServicesSerializer(data={
-                        'service': service['id'],
+                        'service': id,
                         'order': order.id,
                         'price': service['price']
                     })
