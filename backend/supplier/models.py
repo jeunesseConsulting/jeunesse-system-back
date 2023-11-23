@@ -5,7 +5,7 @@ class Supplier(models.Model):
 
 
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
-    document = models.CharField(max_length=14, blank=True, null=True)
+    document = models.CharField(max_length=40, blank=True, null=True)
     agent = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=40, blank=True, null=True)
     email = models.CharField(max_length=255, blank=True, null=True)
