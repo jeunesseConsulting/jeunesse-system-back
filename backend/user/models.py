@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     gender = models.CharField(max_length=1, null=True, blank=True)
     person_type = models.CharField(max_length=1, null=False, blank=False, default='P')
     document = models.CharField(max_length=40, null=False, blank=False)
-    birth_date = models.DateField(null=True, blank=True)
+    birth_date = models.DateTimeField(null=True, blank=True)
     phone = models.CharField(max_length=40, null=False, blank=False)
     is_active = models.BooleanField(default=True)
 
