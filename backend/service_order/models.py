@@ -52,7 +52,7 @@ class ServiceOrder(models.Model):
         blank=True
     )
 
-    delivery_forecast = models.DateField(blank=True, null=True)
+    delivery_forecast = models.DateTimeField(blank=True, null=True)
 
     payment_method = models.ForeignKey(
         PaymentMethod,

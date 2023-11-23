@@ -12,7 +12,7 @@ class Client(models.Model):
     address = models.CharField(max_length=510)
     zip_code = models.CharField(max_length=20)
     gender = models.CharField(max_length=1, blank=True, null=True)
-    birth_date = models.DateField(blank=True, null=True)
+    birth_date = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
