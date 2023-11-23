@@ -55,6 +55,7 @@ INSTALLED_APPS += [
     'payment_method',
     'status',
     'supplier',
+    'purchase_order',
 ]
 
 MIDDLEWARE = [
