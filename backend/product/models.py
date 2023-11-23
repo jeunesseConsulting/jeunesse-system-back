@@ -31,6 +31,7 @@ class Product(models.Model):
 
     name = models.CharField(max_length=255, blank=False, null=False)
     price = models.FloatField(default=0.0)
+    purchase_price = models.FloatField(default=0.0)
     brand = models.CharField(max_length=255)
     quantity = models.FloatField(default=0.0)
     
