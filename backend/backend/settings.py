@@ -54,6 +54,7 @@ INSTALLED_APPS += [
     'service',
     'payment_method',
     'status',
+    'supplier',
 ]
 
 MIDDLEWARE = [
