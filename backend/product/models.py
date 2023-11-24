@@ -32,23 +32,23 @@ class Product(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     price = models.FloatField(default=0.0)
     purchase_price = models.FloatField(default=0.0)
-    brand = models.CharField(max_length=255)
+    brand = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.FloatField(default=0.0)
     
     measure_unit = models.ForeignKey(
         ProductMeasureUnit,
         related_name='product_measure_unit',
         on_delete=models.PROTECT,
-        blank=False,
-        null=False
+        blank=True,
+        null=True
     )
 
     type = models.ForeignKey(
         ProductType,
         related_name='product_type',
         on_delete=models.PROTECT,
-        blank=False,
-        null=False
+        blank=True,
+        null=True
     )
 
     def __str__(self):

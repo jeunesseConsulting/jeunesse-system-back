@@ -16,7 +16,7 @@ class PurchaseOrderProducts(models.Model):
         blank=False
     )
 
-    price = models.FloatField(null=False, blank=False)
+    price = models.FloatField(null=False, blank=False, default=0.0)
     quantity = models.FloatField(null=True, blank=True)
 
     class Meta:

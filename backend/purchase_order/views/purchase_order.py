@@ -4,7 +4,7 @@ from purchase_order.serializer import PurchaseOrderSerializer, PurchaseOrderCrea
 from purchase_order.services.purchase_order import PurchaseOrderServices, PurchaseOrderProductsServices
 
 from product.services.product import ProductServices
-from product.serializer import ProductSerializer
+from product.serializer import ProductCreateSerializer
 
 from django.db import transaction
 
@@ -33,12 +33,22 @@ class PurchaseOrderView(AuthenticatedAPIView):
                 try:
                     id = product['id']
                 except:
-                    ...
+                    new_product_serializer = ProductCreateSerializer(data={'name':product['name']})
+                    if new_product_serializer.is_valid():
+                        new_product_instance = new_product_serializer.save()
+                        id = new_product_instance.id
+                    else:
+                        return Response(new_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+                try:
+                    price = product['price']
+                except:
+                    price = 0.0
 
                 product_serializer = PurchaseOrderProductsCreateSerializer(data={
                     'purchase_order': None,
-                    'product': product['id'],
-                    'price': product['price'],
+                    'product': id,
+                    'price': price,
                     'quantity': product['quantity']
                 })
                 
