@@ -73,7 +73,6 @@ class PurchaseOrderView(AuthenticatedAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
 
-
 class PurchaseOrderDetailView(AuthenticatedDetailAPIView):
 
 

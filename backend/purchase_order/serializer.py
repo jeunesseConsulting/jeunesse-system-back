@@ -26,6 +26,20 @@ class PurchaseOrderProductsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PurchaseOrderProductsViewSerializer(serializers.ModelSerializer):
+
+
+    product = ProductSerializer()
+
+    class Meta:
+        model = PurchaseOrderProducts
+        fields = [
+            'product',
+            'price',
+            'quantity'
+        ]
+
+
 class PurchaseOrderStatusSerializer(serializers.ModelSerializer):
 
 
@@ -47,7 +61,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
     def get_products(self, obj):
         if obj.products.exists():
-            return PurchaseOrderProductsSerializer(obj.products, many=True).data
+            return PurchaseOrderProductsViewSerializer(obj.products, many=True).data
         else:
             return []
         
