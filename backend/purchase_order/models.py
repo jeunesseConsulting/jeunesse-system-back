@@ -38,10 +38,13 @@ class PurchaseOrder(models.Model):
 
     products = models.ManyToManyField(
         PurchaseOrderProducts,
-        related_name='po_products'
+        related_name='po_products',
+        blank=True
     )
 
+    delivery_date = models.DateTimeField(blank=True, null=True)
     comments = models.CharField(max_length=510, blank=True, null=True)
+    created_at = models.DateTimeField(auto_created=True, blank=True, null=True)
 
     class Meta:
         db_table = 'purchase_order'

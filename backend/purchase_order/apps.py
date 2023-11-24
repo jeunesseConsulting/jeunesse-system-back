@@ -11,7 +11,7 @@ class PurchaseOrderConfig(AppConfig):
             cursor.execute("SELECT COUNT(*) FROM purchase_order_status;")
             record_count = cursor.fetchone()[0]
 
-        if record_count < 7:
+        if record_count < 4:
             from purchase_order.models import PurchaseOrderStatus
 
             status_list = [

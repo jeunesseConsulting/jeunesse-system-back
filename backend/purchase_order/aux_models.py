@@ -6,7 +6,7 @@ from product.models import Product
 class PurchaseOrderProducts(models.Model):
 
     
-    purchase_order = models.BigIntegerField(null=False, blank=False)
+    purchase_order = models.BigIntegerField(null=True, blank=True)
 
     product = models.ForeignKey(
         Product,
@@ -17,6 +17,7 @@ class PurchaseOrderProducts(models.Model):
     )
 
     price = models.FloatField(null=False, blank=False)
+    quantity = models.FloatField(null=True, blank=True)
 
     class Meta:
         db_table = 'aux_purchase_order_products'
