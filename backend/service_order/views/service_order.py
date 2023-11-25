@@ -88,10 +88,20 @@ class ServiceOrderView(AuthenticatedAPIView):
                     return Response(service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 
             for product in products_data:
+                try:
+                    id = product['id']
+                except:
+                    return Response(data={'message': 'missing product id'})
+                
+                try:
+                    quantity = product['quantity']
+                except:
+                    quantity = 0.0
+
                 product_serializer = OrderProductsCreateSerializer(data={
-                    'product': product['id'],
+                    'product': id,
                     'order': order_instance.id,
-                    'quantity': product['quantity']
+                    'quantity': quantity
                 })
                 if product_serializer.is_valid():
                     product_serializer.save()
@@ -357,7 +367,4 @@ class ServiceOrderSummaryView(APIView):
             data[status_instance.name]['total_products'] = total_products_value
 
         return Response(data=data, status=status.HTTP_200_OK)
-
-
-
 
