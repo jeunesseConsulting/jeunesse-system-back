@@ -2,6 +2,7 @@ from backend.abstracts.views import AuthenticatedAPIView, AuthenticatedDetailAPI
 
 from purchase_order.serializer import PurchaseOrderSerializer, PurchaseOrderCreateSerializer, PurchaseOrderProductsCreateSerializer
 from purchase_order.services.purchase_order import PurchaseOrderServices, PurchaseOrderProductsServices
+from purchase_order.services.status import PurchaseOrderStatusServices
 
 from product.services.product import ProductServices
 from product.serializer import ProductCreateSerializer
@@ -91,18 +92,13 @@ class PurchaseOrderDetailView(AuthenticatedDetailAPIView):
         order_data = data.copy()
 
         order = PurchaseOrderServices.get(id)
+
+        if order.status.name == 'Concluída':
+            return Response({'message':'purchase order closed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
         
         if data:
             if order:
-                if order_data:
-                    serializer = PurchaseOrderCreateSerializer(instance=order, data=order_data, partial=True)
-                    if serializer.is_valid():
-                        serializer.save()
-                    else:
-                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    pass
-                
+                # Alterando dados dos produtos da PO
                 if products_data:
                     old_products = PurchaseOrderProductsServices.filter_by_purchase_order_id(order.id)
 
@@ -142,7 +138,24 @@ class PurchaseOrderDetailView(AuthenticatedDetailAPIView):
                     for product_serializer in product_serializers:
                         product_serializer.save()
 
-                    order.products.set(PurchaseOrderProductsServices.filter_by_purchase_order_id(order.id))
+                    order.products.set(PurchaseOrderProductsServices.filter_by_purchase_order_id(order.id))  
+                else:
+                    pass
+
+                # Alterando dados da PO
+                if order_data:
+                    serializer = PurchaseOrderCreateSerializer(instance=order, data=order_data, partial=True)
+                    if serializer.is_valid():
+                        status_po = PurchaseOrderStatusServices.get(serializer.validated_data['status'].id)
+                        if status_po.name == 'Concluída':
+                            for product_aux in order.products.all():
+                                product = ProductServices.get(product_aux.product.id)
+                                product.quantity += product_aux.quantity
+                                product.save()
+                        serializer.save()
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
                     response_serializer = PurchaseOrderSerializer(PurchaseOrderServices.get(order.id))
                     return Response(response_serializer.data, status=status.HTTP_200_OK)
                 else:

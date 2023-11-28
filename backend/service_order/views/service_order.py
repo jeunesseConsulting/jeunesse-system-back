@@ -8,6 +8,7 @@ from service.services.order_services import OrderServicesServices
 
 from product.serializer import OrderProductsCreateSerializer
 from product.services.order_products import OrderProductsServices
+from product.services.product import ProductServices
 
 from status.services.status import StatusServices
 
@@ -130,6 +131,9 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
         order_data = data.copy()
         order = self.model_service.get(id)
 
+        if order.status.name == 'Concluída':
+            return Response(data={'message':'service order closed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         if order:
 
             #Setando os serviços novos
@@ -190,6 +194,21 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
             if order_data:
                 serializer = ServiceOrderCreateSerializer(order, data=order_data, partial=True)
                 if serializer.is_valid():
+                    status_os = StatusServices.get(serializer.validated_data['status'].id)
+                    if status_os.name == 'Concluída':
+                        for product_aux in order.products.all():
+                            product = ProductServices.get(product_aux.product.id)
+                            old_qty = product.quantity
+                            product.quantity -= product_aux.quantity
+                            if product.quantity < 0:
+                                return Response(data={
+                                    'message':'insufficient quantity in stock',
+                                    'product_id': product.id,
+                                    'stock_qty': old_qty,
+                                    'os_qty': product_aux.quantity
+                                })
+                            else:
+                                product.save()
                     serializer.save()
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
