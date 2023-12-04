@@ -2,6 +2,7 @@ import datetime
 from pathlib import Path
 import dj_database_url
 import os
+import environ
 
 CLIENT_NAME = 'Mecânica Jeunesse'
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
 ]
 
 INSTALLED_APPS += [
@@ -56,6 +58,7 @@ INSTALLED_APPS += [
     'status',
     'supplier',
     'purchase_order',
+    'notification',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +91,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+ASGI_APPLICATION = 'backend.asgi.application'
 
 
 # Database
@@ -167,4 +171,17 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = 'user.User'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+env = environ.Env()
+environ.Env.read_env()
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [env('REDIS_URL', default='localhost:6379')],
+        },
+    },
+}
 
