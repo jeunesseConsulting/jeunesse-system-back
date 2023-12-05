@@ -14,7 +14,7 @@ from backend.settings import DEBUG
 
 
 if DEBUG:
-    URL = 'wss://127.0.0.1:8000/ws/notification'
+    URL = 'ws://127.0.0.1:8000/ws/notification'
 else:
     URL = 'wss://jeunesse-system-back.onrender.com/ws/notification'
 

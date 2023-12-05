@@ -132,11 +132,7 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
         order_data = data.copy()
         order = self.model_service.get(id)
 
-        if order.status.name == 'Concluída':
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            response = loop.run_until_complete(SendNotification.send_finished_order_notification(order.id))
-            loop.close()
+        if order.status.name == 'Concluída': 
             return Response(data={'message':'service order closed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         if order:
@@ -218,7 +214,15 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 
-            response_serializer = self.model_serializer(ServiceOrderServices.get(order.id))
+            new_order = ServiceOrderServices.get(order.id)
+            response_serializer = self.model_serializer(new_order)
+
+            if new_order.status.name == 'Concluída':
+                asyncio.run(SendNotification.send_finished_order_notification(order.id))
+
+            if new_order.status.name == 'Cancelada':
+                asyncio.run(SendNotification.send_canceled_order_notification(order.id))
+
             return Response(response_serializer.data, status=status.HTTP_200_OK)
 
         else:
