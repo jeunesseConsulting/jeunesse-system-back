@@ -7,6 +7,16 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import base64
 from io import BytesIO
 import datetime
+import json
+import websockets
+
+from backend.settings import DEBUG
+
+
+if DEBUG:
+    URL = 'wss://127.0.0.1:8000/ws/notification'
+else:
+    URL = 'wss://jeunesse-system-back.onrender.com/ws/notification'
 
 def format_currency_babel(value, currency='BRL'):
     return format_currency(value, currency, locale='pt_BR')
@@ -284,3 +294,25 @@ def generate_service_order_pdf(order_data, mec_name):
         # Retorna a representação base64 do PDF
     return pdf_base64
 
+class SendNotification:
+        
+
+    async def send_canceled_order_notification(order_id):
+        message = {
+            "message": f"service order {order_id} canceled",
+            "type": "serviceOrderCanceled",
+            "orderId": order_id
+        }
+
+        async with websockets.connect(URL) as websocket:
+            await websocket.send(json.dumps(message))
+
+    async def send_finished_order_notification(order_id):
+        message = {
+            "message": f"service order {order_id} finished",
+            "type": "serviceOrderFinished",
+            "orderId": order_id
+        }
+
+        async with websockets.connect(URL) as websocket:
+            await websocket.send(json.dumps(message))

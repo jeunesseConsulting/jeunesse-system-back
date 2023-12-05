@@ -20,11 +20,12 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.db.models import Sum
 
-from service_order.utils import generate_service_order_pdf
+from service_order.utils import generate_service_order_pdf, SendNotification
 
 from backend.settings import CLIENT_NAME
 
 import datetime
+import asyncio
 
 
 class ServiceOrderView(AuthenticatedAPIView):
@@ -132,6 +133,10 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
         order = self.model_service.get(id)
 
         if order.status.name == 'Concluída':
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            response = loop.run_until_complete(SendNotification.send_finished_order_notification(order.id))
+            loop.close()
             return Response(data={'message':'service order closed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         if order:
