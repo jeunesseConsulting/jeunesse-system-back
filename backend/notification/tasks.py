@@ -24,3 +24,43 @@ async def send_test():
 async def schedule_send_test():
     while True:
         await send_test()
+
+async def send_expiring_today_service_order(order_id):
+    message = {
+        "message": f"A ordem de serviço {order_id} está vencendo hoje",
+        "type": "serviceOrderExpiringToday",
+        "orderId": order_id
+    }
+
+    async with websockets.connect(URL) as websocket:
+        await websocket.send(json.dumps(message))
+
+async def send_expiring_tomorrow_service_order(order_id):
+    message = {
+        "message": f"A ordem de serviço {order_id} vencerá amanhã",
+        "type": "serviceOrderExpiringTomorrow",
+        "orderId": order_id
+    }
+
+    async with websockets.connect(URL) as websocket:
+        await websocket.send(json.dumps(message))
+
+async def send_expiring_today_purchase_order(order_id):
+    message = {
+        "message": f"A ordem de compra {order_id} está vencendo hoje",
+        "type": "purchaseOrderExpiringToday",
+        "orderId": order_id
+    }
+
+    async with websockets.connect(URL) as websocket:
+        await websocket.send(json.dumps(message))
+
+async def send_expiring_tomorrow_purchase_order(order_id):
+    message = {
+        "message": f"A ordem de compra {order_id} vencerá amanhã",
+        "type": "purchaseOrderExpiringTomorrow",
+        "orderId": order_id
+    }
+
+    async with websockets.connect(URL) as websocket:
+        await websocket.send(json.dumps(message))
