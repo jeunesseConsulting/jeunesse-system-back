@@ -1,6 +1,5 @@
 from django.apps import AppConfig
-from notification.tasks import schedule_send_test
-import asyncio
+
 from threading import Thread
 
 class NotificationConfig(AppConfig):
@@ -8,7 +7,13 @@ class NotificationConfig(AppConfig):
     name = 'notification'
 
     def ready(self):
-        def schedule():
-            asyncio.run(schedule_send_test())
+        from notification.tasks import send_expiring_today_service_order, send_expiring_tomorrow_service_order
+        import asyncio
+        
+        async def schedule():
+            await asyncio.gather(send_expiring_today_service_order(), send_expiring_tomorrow_service_order())
 
-        Thread(target=schedule).start()
+        def execute_tasks():
+            asyncio.run(schedule())
+
+        Thread(target=execute_tasks).start()
