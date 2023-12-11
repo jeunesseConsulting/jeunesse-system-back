@@ -34,6 +34,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'serviceOrderCanceled',
             'serviceOrderFinished',
             'serviceOrderRefused',
+            'serviceOrderExpiringToday',
+            'serviceOrderExpiringTomorrow',
+            'purchaseOrderExpiringToday',
+            'purchaseOrderExpiringTomorrow',
         ]
 
         if notification_type in order_notifications:

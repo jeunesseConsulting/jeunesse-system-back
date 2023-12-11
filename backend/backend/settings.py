@@ -100,10 +100,12 @@ ASGI_APPLICATION = 'backend.asgi.application'
 DATABASES = {
     PROD_DB: dj_database_url.parse(os.environ.get('DATABASE_URL')),
 
-    DEV_DB: {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    DEV_DB: dj_database_url.parse('postgres://fabeck:b4E2qIASlP0vECrcBjBpz836EH27ubug@dpg-clrhjs9jvg7s73eh3th0-a.ohio-postgres.render.com/test_db_hh2q')
+    
+    #DEV_DB: {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': BASE_DIR / 'db.sqlite3',
+    #}
 }
 
 

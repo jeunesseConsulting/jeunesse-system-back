@@ -8,8 +8,13 @@ class PurchaseOrderConfig(AppConfig):
 
     def ready(self):
         with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM purchase_order_status;")
-            record_count = cursor.fetchone()[0]
+            try:
+                cursor.execute("SELECT COUNT(*) FROM purchase_order_status;")
+                record_count = cursor.fetchone()[0]
+            except:
+                record_count = 100
+                print("database doesn't exist")
+                pass
 
         if record_count < 4:
             from purchase_order.models import PurchaseOrderStatus

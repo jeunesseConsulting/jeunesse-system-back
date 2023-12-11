@@ -12,6 +12,7 @@ if DEBUG:
 else:
     URL = 'wss://jeunesse-system-back.onrender.com/ws/notification'
 
+
 async def send_test():
     message = {
         "message": f"service order test canceled",
@@ -29,13 +30,14 @@ async def schedule_send_test():
         await send_test()
 
 async def send_expiring_today_service_order():
-    await asyncio.sleep(15)
     orders = await ServiceOrderServices.service_orders_expiring_today()
 
-    if len(orders) > 0:
+    await asyncio.sleep(15)
+
+    if orders and len(orders) > 0:
         for order in orders:
             message = {
-                "message": f"A ordem de serviço {order.id} está vencendo hoje",
+                "message": f"A ordem de servico {order.id} esta vencendo hoje",
                 "type": "serviceOrderExpiringToday",
                 "orderId": order.id
             }
@@ -47,7 +49,7 @@ async def send_expiring_tomorrow_service_order():
     await asyncio.sleep(15)
     orders = await ServiceOrderServices.service_orders_expiring_tomorrow()
 
-    if len(orders) > 0:
+    if orders and len(orders) > 0:
         for order in orders:
             message = {
                 "message": f"A ordem de serviço {order.id} vencerá amanhã",

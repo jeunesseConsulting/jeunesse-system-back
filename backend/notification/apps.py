@@ -7,13 +7,10 @@ class NotificationConfig(AppConfig):
     name = 'notification'
 
     def ready(self):
-        from notification.tasks import send_expiring_today_service_order, send_expiring_tomorrow_service_order
+        from notification.tasks import send_expiring_today_service_order, send_expiring_tomorrow_service_order, schedule_send_test
         import asyncio
-        
-        async def schedule():
-            await asyncio.gather(send_expiring_today_service_order(), send_expiring_tomorrow_service_order())
 
         def execute_tasks():
-            asyncio.run(schedule())
+            asyncio.run(send_expiring_today_service_order())
 
         Thread(target=execute_tasks).start()
