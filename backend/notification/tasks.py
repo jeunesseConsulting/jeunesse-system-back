@@ -46,13 +46,14 @@ async def send_expiring_today_service_order():
                 await websocket.send(json.dumps(message))
 
 async def send_expiring_tomorrow_service_order():
-    await asyncio.sleep(15)
     orders = await ServiceOrderServices.service_orders_expiring_tomorrow()
+
+    await asyncio.sleep(15)
 
     if orders and len(orders) > 0:
         for order in orders:
             message = {
-                "message": f"A ordem de serviço {order.id} vencerá amanhã",
+                "message": f"A ordem de servico {order.id} vencera amanha",
                 "type": "serviceOrderExpiringTomorrow",
                 "orderId": order.id
             }
@@ -62,7 +63,7 @@ async def send_expiring_tomorrow_service_order():
 
 async def send_expiring_today_purchase_order(order_id):
     message = {
-        "message": f"A ordem de compra {order_id} está vencendo hoje",
+        "message": f"A ordem de compra {order_id} esta vencendo hoje",
         "type": "purchaseOrderExpiringToday",
         "orderId": order_id
     }
@@ -72,7 +73,7 @@ async def send_expiring_today_purchase_order(order_id):
 
 async def send_expiring_tomorrow_purchase_order(order_id):
     message = {
-        "message": f"A ordem de compra {order_id} vencerá amanhã",
+        "message": f"A ordem de compra {order_id} vencera amanha",
         "type": "purchaseOrderExpiringTomorrow",
         "orderId": order_id
     }

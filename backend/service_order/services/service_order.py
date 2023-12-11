@@ -22,9 +22,12 @@ class ServiceOrderServices(AbstractServices):
         else:
             return None
     
-    def service_orders_expiring_tomorrow():
+    async def service_orders_expiring_tomorrow():
         tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-        orders = ServiceOrder.objects.filter(delivery_forecast__date=tomorrow)
+        orders = await sync_to_async(list)(
+            ServiceOrder.objects.filter(delivery_forecast__date=tomorrow)
+        )
+
         if orders:
             return orders
         else:
