@@ -11,12 +11,15 @@ class NotificationConfig(AppConfig):
 
     def ready(self):
         from notification.tasks import send_expiring_today_service_order, send_expiring_tomorrow_service_order
+        from notification.tasks import send_expiring_today_purchase_order, send_expiring_tomorrow_purchase_order
         import asyncio
 
         async def gather_tasks():
             await asyncio.gather(
                 send_expiring_today_service_order(),
-                send_expiring_tomorrow_service_order()
+                send_expiring_tomorrow_service_order(),
+                send_expiring_today_purchase_order(),
+                send_expiring_tomorrow_purchase_order(),
             )
             
         def execute_tasks():
