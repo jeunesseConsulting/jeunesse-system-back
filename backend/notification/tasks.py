@@ -6,6 +6,7 @@ from backend.settings import DEBUG
 
 from service_order.services.service_order import ServiceOrderServices
 from purchase_order.services.purchase_order import PurchaseOrderServices
+from notification.services.notification import NotificationServices
 
 
 if DEBUG:
@@ -29,6 +30,11 @@ async def send_expiring_today_service_order():
 
             async with websockets.connect(URL) as websocket:
                 await websocket.send(json.dumps(message))
+                await NotificationServices.create_valid_notification(
+                    type = message['type'],
+                    message = message['message'],
+                    relationship_key = message["orderId"]
+                )
 
 async def send_expiring_tomorrow_service_order():
     orders = await ServiceOrderServices.service_orders_expiring_tomorrow()
@@ -45,6 +51,11 @@ async def send_expiring_tomorrow_service_order():
 
             async with websockets.connect(URL) as websocket:
                 await websocket.send(json.dumps(message))
+                await NotificationServices.create_valid_notification(
+                    type = message['type'],
+                    message = message['message'],
+                    relationship_key = message["orderId"]
+                )
 
 async def send_expiring_today_purchase_order():
     orders = await PurchaseOrderServices.purchase_orders_expiring_today()
@@ -59,6 +70,11 @@ async def send_expiring_today_purchase_order():
 
             async with websockets.connect(URL) as websocket:
                 await websocket.send(json.dumps(message))
+                await NotificationServices.create_valid_notification(
+                    type = message['type'],
+                    message = message['message'],
+                    relationship_key = message["orderId"]
+                )
 
 async def send_expiring_tomorrow_purchase_order():
     orders = await PurchaseOrderServices.purchase_orders_expiring_tomorrow()
@@ -73,3 +89,8 @@ async def send_expiring_tomorrow_purchase_order():
 
             async with websockets.connect(URL) as websocket:
                 await websocket.send(json.dumps(message))
+                await NotificationServices.create_valid_notification(
+                    type = message['type'],
+                    message = message['message'],
+                    relationship_key = message["orderId"]
+                )
