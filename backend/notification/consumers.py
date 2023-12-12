@@ -30,12 +30,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             )
         
         order_notifications = [
-            'serviceOrderStarted',
             'serviceOrderCanceled',
             'serviceOrderFinished',
-            'serviceOrderRefused',
             'serviceOrderExpiringToday',
             'serviceOrderExpiringTomorrow',
+        ]
+
+        purchase_order_notifications = [
             'purchaseOrderExpiringToday',
             'purchaseOrderExpiringTomorrow',
         ]
@@ -46,6 +47,18 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 "notification_group",
                 {
                     'type': 'send_order_notification',
+                    'message': message,
+                    'notificationType': notification_type,
+                    'orderId': order_id,
+                }
+            )
+
+        if notification_type in purchase_order_notifications:
+            order_id = text_data_json.get('orderId', '')
+            await self.channel_layer.group_send(
+                "notification_group",
+                {
+                    'type': 'send_purchase_order_notification',
                     'message': message,
                     'notificationType': notification_type,
                     'orderId': order_id,

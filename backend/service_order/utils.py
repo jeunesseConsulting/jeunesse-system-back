@@ -299,7 +299,7 @@ class SendNotification:
 
     async def send_canceled_order_notification(order_id):
         message = {
-            "message": f"service order {order_id} canceled",
+            "message": f"ordem de servico {order_id} cancelada",
             "type": "serviceOrderCanceled",
             "orderId": order_id
         }
@@ -309,7 +309,7 @@ class SendNotification:
 
     async def send_finished_order_notification(order_id):
         message = {
-            "message": f"service order {order_id} finished",
+            "message": f"ordem de servico {order_id} finalizada",
             "type": "serviceOrderFinished",
             "orderId": order_id
         }
