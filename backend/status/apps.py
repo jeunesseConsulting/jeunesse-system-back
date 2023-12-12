@@ -8,8 +8,13 @@ class StatusConfig(AppConfig):
 
     def ready(self):
         with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM status;")
-            record_count = cursor.fetchone()[0]
+            try:
+                cursor.execute("SELECT COUNT(*) FROM status;")
+                record_count = cursor.fetchone()[0]
+            except:
+                record_count = 100
+                print("database doesn't exist")
+                pass
 
         if record_count < 7:
             from status.models import Status
