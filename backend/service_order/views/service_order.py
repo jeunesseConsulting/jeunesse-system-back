@@ -26,6 +26,7 @@ from backend.settings import CLIENT_NAME
 
 import datetime
 import asyncio
+import schedule
 
 
 class ServiceOrderView(AuthenticatedAPIView):
@@ -218,10 +219,10 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
             response_serializer = self.model_serializer(new_order)
 
             if new_order.status.name == 'Concluída':
-                asyncio.run(SendNotification.send_finished_order_notification(order.id))
+                schedule.every(1).seconds.do(lambda: asyncio.run(SendNotification.send_finished_order_notification(order.id)))
 
             if new_order.status.name == 'Cancelada':
-                asyncio.run(SendNotification.send_canceled_order_notification(order.id))
+                schedule.every(1).seconds.do(lambda: asyncio.run(SendNotification.send_canceled_order_notification(order.id)))
 
             return Response(response_serializer.data, status=status.HTTP_200_OK)
 
