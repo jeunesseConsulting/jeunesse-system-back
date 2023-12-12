@@ -1,12 +1,5 @@
 # Notificações
-'serviceOrderStarted',
-            'serviceOrderCanceled',
-            'serviceOrderFinished',
-            'serviceOrderRefused',
-            'serviceOrderExpiringToday',
-            'serviceOrderExpiringTomorrow',
-            'purchaseOrderExpiringToday',
-            'purchaseOrderExpiringTomorrow',
+
 - _Link:_ <ws://jeunesse-system-back.onrender.com/ws/notification>
 
 ## Notificações sem jobs
