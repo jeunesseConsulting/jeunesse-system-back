@@ -28,7 +28,7 @@ class NotificationConfig(AppConfig):
         def execute_tasks():
             asyncio.run(gather_tasks())
 
-        schedule.every().day.at("14:12").do(lambda: tz.localize(execute_tasks()).astimezone(pytz.utc))
+        schedule.every().day.at("09:00").do(lambda: tz.localize(execute_tasks()).astimezone(pytz.utc))
         schedule.every().day.at("12:30").do(lambda: tz.localize(execute_tasks()).astimezone(pytz.utc))
         schedule.every().day.at("16:00").do(lambda: tz.localize(execute_tasks()).astimezone(pytz.utc))
 
