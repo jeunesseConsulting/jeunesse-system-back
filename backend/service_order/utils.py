@@ -9,8 +9,11 @@ from io import BytesIO
 import datetime
 import json
 import websockets
+import schedule
 
 from backend.settings import DEBUG
+
+from notification.services.notification import NotificationServices
 
 
 if DEBUG:
@@ -306,6 +309,13 @@ class SendNotification:
 
         async with websockets.connect(URL) as websocket:
             await websocket.send(json.dumps(message))
+            await NotificationServices.create_valid_notification(
+                    type = message['type'],
+                    message = message['message'],
+                    relationship_key = message["orderId"]
+                )
+            
+        return schedule.CancelJob
 
     async def send_finished_order_notification(order_id):
         message = {
@@ -316,3 +326,10 @@ class SendNotification:
 
         async with websockets.connect(URL) as websocket:
             await websocket.send(json.dumps(message))
+            await NotificationServices.create_valid_notification(
+                    type = message['type'],
+                    message = message['message'],
+                    relationship_key = message["orderId"]
+                )
+            
+        return schedule.CancelJob
