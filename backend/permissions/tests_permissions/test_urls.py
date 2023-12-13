@@ -12,5 +12,5 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class, PermissionsView)
 
     def test_permissions_detail_url_is_resolved(self):
-        url = reverse('permissions_detail_view')
+        url = reverse('permissions_detail_view', kwargs={'id':1})
         self.assertEquals(resolve(url).func.view_class, PermissionsDetailView)
