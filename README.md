@@ -89,3 +89,24 @@ Enviado quando a ordem de compra tem a data de vencimento para amanhã
     "orderId": order_id,
 }
 ```
+
+---
+# Testes
+
+## Testes implementados
+
+Aplicativos | Teste de URL | Teste de View | Teste de Modelo
+----------- | :------------: | :-------------: | ---------------
+**Client** | X | X
+**Notification** | X | X
+**Payment Method** | X | X
+**Permissions** | X | X
+**Product** | X | X
+**Purchase Order** | X | X
+**Roles** | X | X
+**Services** | X | X
+**Service Order** | X | X
+**Status** | X | X
+**Supplier** | X | X
+**User** | X | X
+**Vehicle** | X | X
