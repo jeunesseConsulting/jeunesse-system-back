@@ -12,5 +12,5 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class, StatusView)
 
     def test_status_detail_url_is_resolved(self):
-        url = reverse('status_detail_view')
+        url = reverse('status_detail_view', kwargs={'id':1})
         self.assertEquals(resolve(url).func.view_class, StatusDetailView)
