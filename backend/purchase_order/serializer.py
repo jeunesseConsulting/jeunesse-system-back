@@ -72,3 +72,41 @@ class PurchaseOrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = '__all__'
+
+
+class PurchaseOrderSummarySerializer(serializers.ModelSerializer):
+
+
+    supplier = SupplierSerializer()
+    status = PurchaseOrderStatusSerializer()
+
+    class Meta:
+        model = PurchaseOrder
+        fields = [
+            'supplier',
+            'status',
+            'delivery_date',
+            'created_at',
+        ]
+
+
+class ProductPurchaseSummarySerializer(serializers.ModelSerializer):
+
+    purchase_order = serializers.SerializerMethodField()
+    product = ProductSerializer()
+
+    class Meta:
+        model = PurchaseOrderProducts
+        fields = [
+            'purchase_order',
+            'product',
+            'price',
+            'quantity',
+        ]
+
+    def get_purchase_order(self, obj):
+        if obj.purchase_order:
+            purchase_order = PurchaseOrder.objects.filter(id=obj.purchase_order).first()
+            return PurchaseOrderSummarySerializer(purchase_order).data
+        else:
+            return None

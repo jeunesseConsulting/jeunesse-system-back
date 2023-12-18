@@ -6,6 +6,8 @@ from asgiref.sync import sync_to_async
 
 import datetime
 
+from django.db.models import F
+
 class PurchaseOrderServices(AbstractServices):
 
 
@@ -40,4 +42,11 @@ class PurchaseOrderProductsServices(AbstractServices):
 
     def filter_by_purchase_order_id(order):
         return PurchaseOrderProducts.objects.filter(purchase_order=order)
+    
+    @staticmethod
+    def product_purchase_summary(product_id):
+        purchase_order_products = PurchaseOrderProducts.objects.filter(product__id=product_id)
+        purchase_order_ids = purchase_order_products.values_list('purchase_order', flat=True).distinct()
+        purchase_orders = PurchaseOrder.objects.filter(id__in=purchase_order_ids).order_by('created_at')
 
+        return purchase_order_products, purchase_orders
