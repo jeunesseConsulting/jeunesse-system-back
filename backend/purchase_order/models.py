@@ -44,7 +44,7 @@ class PurchaseOrder(models.Model):
 
     delivery_date = models.DateTimeField(blank=True, null=True)
     comments = models.CharField(max_length=510, blank=True, null=True)
-    created_at = models.DateTimeField(auto_created=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
         db_table = 'purchase_order'

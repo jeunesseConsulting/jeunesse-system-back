@@ -1,6 +1,6 @@
 from backend.abstracts.views import AuthenticatedAPIView, AuthenticatedDetailAPIView
 
-from purchase_order.serializer import PurchaseOrderSerializer, PurchaseOrderCreateSerializer, PurchaseOrderProductsCreateSerializer
+from purchase_order.serializer import PurchaseOrderSerializer, PurchaseOrderCreateSerializer, PurchaseOrderProductsCreateSerializer, ProductPurchaseSummarySerializer
 from purchase_order.services.purchase_order import PurchaseOrderServices, PurchaseOrderProductsServices
 from purchase_order.services.status import PurchaseOrderStatusServices
 
@@ -166,3 +166,15 @@ class PurchaseOrderDetailView(AuthenticatedDetailAPIView):
         else:
             return Response(data={'message':'missing data'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProductPurchaseSummaryView(AuthenticatedAPIView):
+
+
+    def get(self, request, id):
+        purchase_order_products, purchase_orders = PurchaseOrderProductsServices.product_purchase_summary(id)
+
+        if purchase_order_products:
+            serializer = ProductPurchaseSummarySerializer(purchase_order_products, many=True, context={'purchase_orders': purchase_orders})
+            return Response(serializer.data)
+        else:
+            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
