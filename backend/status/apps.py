@@ -13,7 +13,6 @@ class StatusConfig(AppConfig):
                 record_count = cursor.fetchone()[0]
             except:
                 record_count = 100
-                print("database doesn't exist")
                 pass
 
         if record_count < 7:
@@ -34,4 +33,19 @@ class StatusConfig(AppConfig):
                     Status.objects.get_or_create(name=obj)
                 except:
                     pass
+
+        # Criando usuário admin se o mesmo não existir
+        from user.services.user import UserService
+        try:
+            UserService.create(
+                name='admin',
+                last_name='admin',
+                email='admin@admin.com',
+                password='admin@123',
+                person_type='P',
+                document='123',
+                phone='123'
+            )
+        except:
+            pass
 
