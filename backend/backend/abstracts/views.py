@@ -12,7 +12,7 @@ class AuthenticatedAPIView(APIView):
     model_service = None
     model_serializer = None
 
-    def get(cls, request):
+    def get(cls, _):
         objs = cls.model_service.query_all()
         serializer = cls.model_serializer(objs, many=True)
 
@@ -25,8 +25,8 @@ class AuthenticatedAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
 class AuthenticatedDetailAPIView(APIView):
@@ -36,14 +36,14 @@ class AuthenticatedDetailAPIView(APIView):
     model_service = None
     model_serializer = None
 
-    def get(cls, request, id):
+    def get(cls, _, id):
         obj = cls.model_service.get(id)
 
         if obj:
             serializer = cls.model_serializer(obj)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def put(cls, request, id):
         obj = cls.model_service.get(id)
@@ -53,17 +53,17 @@ class AuthenticatedDetailAPIView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
-    def delete(cls, request, id):
+    def delete(cls, _, id):
         obj = cls.model_service.get(id)
 
         if obj:
             obj.delete()
             return Response(data={'message': 'object deleted'}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
 

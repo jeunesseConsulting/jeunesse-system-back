@@ -11,7 +11,7 @@ from vehicle.services.vehicle import VehicleServices
 class ClientView(AuthenticatedAPIView):
 
 
-    def get(self, request):
+    def get(self, _):
         clients = ClientServices.query_all()
         serializer = ClientSerializer(clients, many=True)
 
@@ -24,8 +24,8 @@ class ClientView(AuthenticatedAPIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
 class ClientDetailView(AuthenticatedAPIView):
@@ -55,10 +55,10 @@ class ClientDetailView(AuthenticatedAPIView):
                 ]
                 data['vehicles'] = vehicles_data
                 return Response(data=data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def put(self, request, id):
         client = ClientServices.get(id)
@@ -68,16 +68,16 @@ class ClientDetailView(AuthenticatedAPIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-    def delete(self, request, id):
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def delete(self, _, id):
         client = ClientServices.get(id)
 
         if client:
             client.delete()
             return Response(data={'message':'client deleted'}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
