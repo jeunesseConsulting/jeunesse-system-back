@@ -47,7 +47,7 @@ class UserService:
         
         if check_password(password, user.password):
             return user
-        else:
-            return None
+
+        return None
 
 

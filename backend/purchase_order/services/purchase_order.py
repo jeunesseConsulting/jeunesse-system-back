@@ -20,8 +20,8 @@ class PurchaseOrderServices(AbstractServices):
 
         if orders:
             return orders
-        else:
-            return None
+
+        return None
         
     async def purchase_orders_expiring_tomorrow():
         tomorrow = datetime.date.today() + datetime.timedelta(days=1)
@@ -31,8 +31,8 @@ class PurchaseOrderServices(AbstractServices):
 
         if orders:
             return orders
-        else:
-            return None
+
+        return None
 
 
 class PurchaseOrderProductsServices(AbstractServices):

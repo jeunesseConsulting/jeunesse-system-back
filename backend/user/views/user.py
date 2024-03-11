@@ -15,15 +15,13 @@ class UserView(AuthenticatedAPIView):
         users = UserService.query_all()
         active_filter = request.query_params.get('is_active')
 
-        if active_filter:
-            if active_filter == 'true':
-                users = users.filter(is_active=True)
-            elif active_filter == 'false':
-                users = users.filter(is_active=False)
-            elif active_filter != 'true' and active_filter != 'false':
-                return Response(data={'message':'invalid parameters'}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                pass
+        active_map = {
+            'true': True,
+            'false': False
+        }
+
+        if active_filter in active_map:
+            users = users.filter(is_active=active_map[active_filter])
 
         serializer = UserDetailSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -37,21 +35,21 @@ class UserView(AuthenticatedAPIView):
             response_serializer = UserDetailSerializer(user)
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(AuthenticatedAPIView):
 
 
-    def get(self, request, id):
+    def get(self, _, id):
         user = UserService.get(id)
 
         if user:
             serializer = UserDetailSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def put(self, request, id):
         user = UserService.get(id)
@@ -70,17 +68,17 @@ class UserDetailView(AuthenticatedAPIView):
                 serializer.save()
                 response_serializer = UserDetailSerializer(user)
                 return Response(response_serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
         
-    def delete(self, request, id):
+    def delete(self, _, id):
         user = UserService.get(id)
 
         if user:
             user.delete()
             return Response(data={'message':'user deleted'}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
 

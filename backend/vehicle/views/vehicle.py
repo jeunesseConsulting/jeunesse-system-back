@@ -22,8 +22,8 @@ class VehicleView(AuthenticatedAPIView):
             vehicle = self.model_service.get(serializer.instance.id)
             response_serializer = self.model_serializer(vehicle)
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     
 class VehicleDetailView(AuthenticatedDetailAPIView):
@@ -43,8 +43,8 @@ class VehicleDetailView(AuthenticatedDetailAPIView):
                 vehicle = self.model_service.get(serializer.instance.id)
                 response_serializer = self.model_serializer(vehicle)
                 return Response(response_serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data={'message':'not found'}, status=status.HTTP_404_NOT_FOUND)
 
