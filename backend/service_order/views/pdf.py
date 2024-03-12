@@ -17,6 +17,6 @@ class PDFGeneratorView(APIView):
         if request.data:
             pdf64 = generate_service_order_pdf(request.data, CLIENT_NAME)
             return Response(data={'pdf':pdf64}, status=status.HTTP_200_OK)
-        else:
-            return Response(data={'message':'invalid data'})
+    
+        return Response(data={'message':'invalid data'})
 

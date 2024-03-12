@@ -18,8 +18,8 @@ class ServiceOrderServices(AbstractServices):
 
         if orders:
             return orders
-        else:
-            return None
+        
+        return None
     
     async def service_orders_expiring_tomorrow():
         tomorrow = datetime.date.today() + datetime.timedelta(days=1)
@@ -29,5 +29,5 @@ class ServiceOrderServices(AbstractServices):
 
         if orders:
             return orders
-        else:
-            return None
+        
+        return None

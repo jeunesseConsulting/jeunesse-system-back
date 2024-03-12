@@ -8,10 +8,11 @@ class UserConfig(AppConfig):
     
     def ready(self):
 
-        # Criando usuário admin se o mesmo não existir
+        # Creating admin user on first initialization
         from user.services.user import UserService
+        from permissions.models import Permissions
         try:
-            UserService.create(
+            user = UserService.create(
                 name='admin',
                 last_name='admin',
                 email='admin@admin.com',
@@ -22,3 +23,36 @@ class UserConfig(AppConfig):
             )
         except:
             pass
+
+        # Creating permissions on first initialization
+        from permissions.models import Permissions
+
+        permissions_list = [
+            'CLIENTS',
+            'PAYMENT_METHODS',
+            'PERMISSIONS',
+            'PRODUCTS',
+            'PURCHASE_ORDERS',
+            'ROLES',
+            'SERVICES',
+            'SERVICE_ORDERS',
+            'SUPPLIERS',
+            'USERS',
+            'VEHICLES',
+        ]
+
+        for permission in permissions_list:
+            try:
+                Permissions.objects.create(
+                    name=permission
+                )
+                    
+            except:
+                pass
+
+        # Setting all permissions for admin user
+        permissions = Permissions.objects.values_list('id', flat=True)
+
+        user.permissions.set(permissions)
+
+        
