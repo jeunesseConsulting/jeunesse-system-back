@@ -1,4 +1,5 @@
 from backend.abstracts.services import AbstractServices
+from backend.exceptions import DataBaseException
 
 from vehicle.models import Vehicle
 
@@ -12,5 +13,9 @@ class VehicleServices(AbstractServices):
         try:
             vehicles = Vehicle.objects.filter(owner=id)
             return vehicles
+        
         except Vehicle.DoesNotExist:
             return None
+        
+        except Exception:
+            raise DataBaseException

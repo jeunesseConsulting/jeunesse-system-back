@@ -1,3 +1,7 @@
+# Servidor de teste
+
+Navegar com o terminal na pasta raiz backend e executar o seguinte comando: "python debug.py --start"
+
 # Notificações
 
 - _Link:_ <ws://jeunesse-system-back.onrender.com/ws/notification>

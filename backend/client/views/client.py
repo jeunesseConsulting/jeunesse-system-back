@@ -1,4 +1,6 @@
 from backend.abstracts.views import AuthenticatedAPIView
+from backend.exceptions import DataBaseException
+
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -11,21 +13,8 @@ from vehicle.services.vehicle import VehicleServices
 class ClientView(AuthenticatedAPIView):
 
 
-    def get(self, _):
-        clients = ClientServices.query_all()
-        serializer = ClientSerializer(clients, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        data = request.data
-        serializer = ClientSerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    model_service = ClientServices
+    model_serializer = ClientSerializer
         
 
 class ClientDetailView(AuthenticatedAPIView):
@@ -33,14 +22,20 @@ class ClientDetailView(AuthenticatedAPIView):
 
     def get(self, request, id):
         client = ClientServices.get(id)
-        vehicles_param = request.query_params.get('vehicles')
+        vehicles_param = str(request.query_params.get('vehicles')).lower()
 
         if client:
             serializer = ClientSerializer(client)
             vehicles = 1
             if vehicles_param == 'true':
                 data = serializer.data
-                vehicles = VehicleServices.client_vehicles(client.id)
+                
+                try:
+                    vehicles = VehicleServices.client_vehicles(client.id)
+
+                except DataBaseException:
+                    return Response({'message':'unexpected database error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
                 vehicles_data = [
                     {
                         'id':vehicle.id,

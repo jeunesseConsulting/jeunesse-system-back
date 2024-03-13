@@ -20,3 +20,6 @@ websocket_application = ProtocolTypeRouter({
 })
 
 application = CORSMiddleware(websocket_application, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
+
+# Start application with gunicorn -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8000 backend.asgi:application
+# Debugging server may be started with daphne -b 0.0.0.0 -p 8000 backend.asgi:application

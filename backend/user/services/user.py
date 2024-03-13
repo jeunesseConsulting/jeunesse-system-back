@@ -1,6 +1,8 @@
 from user.models import User
 from django.contrib.auth.hashers import make_password, check_password
 
+from backend.exceptions import DataBaseException
+
 class UserService:
 
 
@@ -42,8 +44,12 @@ class UserService:
     def auth(email, password):
         try:
             user = User.objects.get(email=email)
+            
         except User.DoesNotExist:
             return None
+        
+        except Exception:
+            raise DataBaseException
         
         if check_password(password, user.password):
             return user
