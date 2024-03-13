@@ -11,6 +11,9 @@ class UserConfig(AppConfig):
         # Creating admin user on first initialization
         from user.services.user import UserService
         from permissions.models import Permissions
+
+        user = None
+
         try:
             user = UserService.create(
                 name='admin',
@@ -53,6 +56,7 @@ class UserConfig(AppConfig):
         # Setting all permissions for admin user
         permissions = Permissions.objects.values_list('id', flat=True)
 
-        user.permissions.set(permissions)
+        if user:
+            user.permissions.set(permissions)
 
         
