@@ -31,17 +31,25 @@ class UserConfig(AppConfig):
         from permissions.models import Permissions
 
         permissions_list = [
+            'DASHBOARDS',
+            'FINANCEIRO',
+            'REGISTERS',
+            'USERS',
             'CLIENTS',
-            'PAYMENT_METHODS',
+            'ROLES',
             'PERMISSIONS',
             'PRODUCTS',
-            'PURCHASE_ORDERS',
-            'ROLES',
             'SERVICES',
-            'SERVICE_ORDERS',
-            'SUPPLIERS',
-            'USERS',
+            'PRODUCTS_TYPE',
+            'MEASURES_TYPES',
             'VEHICLES',
+            'SUPPLIERS',
+            'OS',
+            'OC',
+            'QUICK_BUDGET',
+            'SCHEDULER',
+            'HISTORIC',
+            'HISTORIC_CLIENTS',
         ]
 
         for permission in permissions_list:
