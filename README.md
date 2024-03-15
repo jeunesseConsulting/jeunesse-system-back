@@ -5,7 +5,7 @@ Navegar com o terminal na pasta raiz backend e executar o seguinte comando: "pyt
 # Permissões
 
 - DASHBOARDS
-- FINANCEIRO
+- FINANCE
 - REGISTERS
 - USERS
 - CLIENTS
