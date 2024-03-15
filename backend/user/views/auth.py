@@ -12,10 +12,10 @@ class AuthorizationTokenView(APIView):
 
 
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-
         try:
+            email = request.data.get('email')
+            password = request.data.get('password')
+        
             user = UserService.auth(email, password)
         
             if user:

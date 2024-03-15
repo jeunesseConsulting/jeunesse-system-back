@@ -1,4 +1,5 @@
 from backend.abstracts.services import AbstractServices
+from backend.exceptions import DataBaseException
 
 from purchase_order.models import PurchaseOrder, PurchaseOrderProducts
 
@@ -41,12 +42,19 @@ class PurchaseOrderProductsServices(AbstractServices):
     model = PurchaseOrderProducts
 
     def filter_by_purchase_order_id(order):
-        return PurchaseOrderProducts.objects.filter(purchase_order=order)
+        try:
+            return PurchaseOrderProducts.objects.filter(purchase_order=order)
+        
+        except Exception:
+            raise DataBaseException
     
-    @staticmethod
     def product_purchase_summary(product_id):
-        purchase_order_products = PurchaseOrderProducts.objects.filter(product__id=product_id)
-        purchase_order_ids = purchase_order_products.values_list('purchase_order', flat=True).distinct()
-        purchase_orders = PurchaseOrder.objects.filter(id__in=purchase_order_ids).order_by('created_at')
+        try:
+            purchase_order_products = PurchaseOrderProducts.objects.filter(product__id=product_id)
+            purchase_order_ids = purchase_order_products.values_list('purchase_order', flat=True).distinct()
+            purchase_orders = PurchaseOrder.objects.filter(id__in=purchase_order_ids).order_by('created_at')
 
-        return purchase_order_products, purchase_orders
+            return purchase_order_products, purchase_orders
+        
+        except Exception:
+            raise DataBaseException

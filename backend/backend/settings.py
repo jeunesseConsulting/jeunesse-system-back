@@ -97,10 +97,12 @@ ASGI_APPLICATION = 'backend.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+DEV_DB_STR = 'postgres://jeunesse_db_user:ev1W2gjJEHBTW3eJQxHycUSWk7BmmCLi@dpg-cnk9ul0l6cac73a3gq9g-a.ohio-postgres.render.com/test_db'
+
 DATABASES = {
     PROD_DB: dj_database_url.parse(os.environ.get('DATABASE_URL')),
 
-    DEV_DB: dj_database_url.parse('postgres://jeunesse_db_user:ev1W2gjJEHBTW3eJQxHycUSWk7BmmCLi@dpg-cnk9ul0l6cac73a3gq9g-a.ohio-postgres.render.com/test_db')
+    DEV_DB: dj_database_url.parse(DEV_DB_STR)
     
     #DEV_DB: {
     #    'ENGINE': 'django.db.backends.sqlite3',

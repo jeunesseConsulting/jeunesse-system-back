@@ -23,6 +23,7 @@ from django.db.models import Sum
 from service_order.utils import generate_service_order_pdf, SendNotification
 
 from backend.settings import CLIENT_NAME
+from backend.exceptions import DataBaseException
 
 import datetime
 import asyncio
@@ -62,62 +63,71 @@ class ServiceOrderView(AuthenticatedAPIView):
         order_data = data.copy()
         serializer = ServiceOrderCreateSerializer(data=order_data)
 
-        if serializer.is_valid():
-            order_instance = serializer.save()
+        try:
+            if serializer.is_valid():
+                order_instance = serializer.save()
 
-            for service in services_data:
-                try:
-                    id = service['id']
-                except:
-                    new_service_serializer = ServiceSerializer(data={
-                        'name': service['name'],
-                        'standard_value': service['price']
+                # Setting order services
+                for service in services_data:
+                    try:
+                        id = service['id']
+                    except:
+                        new_service_serializer = ServiceSerializer(data={
+                            'name': service['name'],
+                            'standard_value': service['price']
+                        })
+                        if new_service_serializer.is_valid():
+                            new_service_serializer.save()
+                            service_instance = new_service_serializer.instance
+                            id = service_instance.id
+                        else:
+                            return Response(new_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                    service_serializer = OrderServicesSerializer(data={
+                        'service': id,
+                        'order': order_instance.id,
+                        'price': service['price']
                     })
-                    if new_service_serializer.is_valid():
-                        new_service_serializer.save()
-                        service_instance = new_service_serializer.instance
-                        id = service_instance.id
+                    if service_serializer.is_valid():
+                        service_serializer.save()
                     else:
-                        return Response(new_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        return Response(service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+                # Setting order products
+                for product in products_data:
+                    try:
+                        id = product['id']
+                    except:
+                        return Response(data={'message': 'missing product id'})
+                    
+                    try:
+                        quantity = product['quantity']
+                    except:
+                        quantity = 0.0
 
-                service_serializer = OrderServicesSerializer(data={
-                    'service': id,
-                    'order': order_instance.id,
-                    'price': service['price']
-                })
-                if service_serializer.is_valid():
-                    service_serializer.save()
-                else:
-                    return Response(service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
-            for product in products_data:
-                try:
-                    id = product['id']
-                except:
-                    return Response(data={'message': 'missing product id'})
-                
-                try:
-                    quantity = product['quantity']
-                except:
-                    quantity = 0.0
+                    product_serializer = OrderProductsCreateSerializer(data={
+                        'product': id,
+                        'order': order_instance.id,
+                        'quantity': quantity
+                    })
+                    if product_serializer.is_valid():
+                        product_serializer.save()
+                    else:
+                        return Response(product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+                order_instance.products.set(OrderProductsServices.filter_by_service_order_id(order_instance.id))
+                order_instance.services.set(OrderServicesServices.filter_by_service_order_id(order_instance.id))
+                response_serializer = self.model_serializer(ServiceOrderServices.get(order_instance.id))
+                return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
-                product_serializer = OrderProductsCreateSerializer(data={
-                    'product': id,
-                    'order': order_instance.id,
-                    'quantity': quantity
-                })
-                if product_serializer.is_valid():
-                    product_serializer.save()
-                else:
-                    return Response(product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
-            order_instance.products.set(OrderProductsServices.filter_by_service_order_id(order_instance.id))
-            order_instance.services.set(OrderServicesServices.filter_by_service_order_id(order_instance.id))
-            response_serializer = self.model_serializer(ServiceOrderServices.get(order_instance.id))
-            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        except DataBaseException:
+            return Response({'message':'unexpected database error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        
+        except Exception:
+            return Response({'message':'unexpected error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class ServiceOrderDetailView(AuthenticatedDetailAPIView):
@@ -138,7 +148,7 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
 
         if order:
 
-            #Setando os serviços novos
+            # Setando os serviços novos
             if services_data:
                 services = OrderServicesServices.filter_by_service_order_id(order.id)
                 for old_service in services:
@@ -192,7 +202,7 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
                 order.products.set(OrderProductsServices.filter_by_service_order_id(order.id))
 
 
-            #Setando o resto dos campos
+            # Setando o resto dos campos
             if order_data:
                 serializer = ServiceOrderCreateSerializer(order, data=order_data, partial=True)
                 if serializer.is_valid():

@@ -1,18 +1,10 @@
 from roles.models import Role
 
+from backend.abstracts.services import AbstractServices
 
-class RoleService:
+
+class RoleService(AbstractServices):
 
 
-    @staticmethod
-    def query_all():
-        return Role.objects.all()
-    
-    @staticmethod
-    def get(id):
-        try:
-            role = Role.objects.get(id=id)
-            return role
-        except Role.DoesNotExist:
-            return None
+    model = Role
     

@@ -2,43 +2,38 @@ from user.models import User
 from django.contrib.auth.hashers import make_password, check_password
 
 from backend.exceptions import DataBaseException
+from backend.abstracts.services import AbstractServices
 
-class UserService:
+class UserService(AbstractServices):
 
 
-    @staticmethod
-    def query_all():
-        return User.objects.all()
-    
-    @staticmethod
-    def get(id):
-        try:
-            user = User.objects.get(id=id)
-            return user
-        except User.DoesNotExist:
-            return None
+    model = User
     
     @staticmethod
     def create(name, last_name, email, password, person_type, document, phone, role=None, permissions=None, gender=None, birth_date=None):
-        password = make_password(password)
+        try:
+            password = make_password(password)
 
-        user = User.objects.create(
-            name=name,
-            last_name=last_name,
-            email=email,
-            password=password,
-            person_type=person_type,
-            document=document,
-            phone=phone,
-            role=role,
-            gender=gender,
-            birth_date=birth_date
-        )
+            user = User.objects.create(
+                name=name,
+                last_name=last_name,
+                email=email,
+                password=password,
+                person_type=person_type,
+                document=document,
+                phone=phone,
+                role=role,
+                gender=gender,
+                birth_date=birth_date
+            )
 
-        if permissions:
-            user.permissions.set(permissions)
+            if permissions:
+                user.permissions.set(permissions)
 
-        return user
+            return user
+        
+        except Exception:
+            raise DataBaseException
     
     @staticmethod
     def auth(email, password):

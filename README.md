@@ -2,6 +2,28 @@
 
 Navegar com o terminal na pasta raiz backend e executar o seguinte comando: "python debug.py --start"
 
+# Permissões
+
+- DASHBOARDS
+- FINANCEIRO
+- REGISTERS
+- USERS
+- CLIENTS
+- ROLES
+- PERMISSIONS
+- PRODUCTS
+- SERVICES
+- PRODUCTS_TYPE
+- MEASURES_TYPES
+- VEHICLES
+- SUPPLIERS
+- OS
+- OC
+- QUICK_BUDGET
+- SCHEDULER
+- HISTORIC
+- HISTORIC_CLIENTS
+
 # Notificações
 
 - _Link:_ <ws://jeunesse-system-back.onrender.com/ws/notification>

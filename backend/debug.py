@@ -7,6 +7,8 @@ def start_server():
 
     env = os.environ.copy()
     env['DEBUG'] = '1'
+    env['DATABASE_URL'] = 'postgres://jeunesse_db_user:ev1W2gjJEHBTW3eJQxHycUSWk7BmmCLi@dpg-cnk9ul0l6cac73a3gq9g-a.ohio-postgres.render.com/test_db'
+    env['SECRET_KEY'] = 'dev_key'
 
     subprocess.run(command, shell=True, env=env)
 
