@@ -46,5 +46,14 @@ class PurchaseOrder(models.Model):
     comments = models.CharField(max_length=510, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
+    # Func to return the total value of the PO
+    @property
+    def total_value(self):
+        total_value = 0
+        for product in self.products:
+            total_value += product.quantity * product.value
+
+        return total_value
+
     class Meta:
         db_table = 'purchase_order'

@@ -14,6 +14,7 @@ class FinancialEntry(models.Model):
         null=False
     )
 
+    # CharField for 'D' (debit) or 'C' (credit)
     entry_type = models.CharField(max_length=1, null=False, blank=False)
     
     # Date to consider the financial entry
@@ -28,3 +29,6 @@ class FinancialEntry(models.Model):
     origin = models.IntegerField(null=True, blank=True)
 
     value = models.FloatField(null=False, blank=False)
+
+    class Meta:
+        db_table = 'financial_entry'

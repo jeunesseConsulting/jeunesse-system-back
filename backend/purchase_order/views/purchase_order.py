@@ -8,10 +8,14 @@ from purchase_order.services.status import PurchaseOrderStatusServices
 from product.services.product import ProductServices
 from product.serializer import ProductCreateSerializer
 
+from financial.serializer import FinancialEntrySerializer
+
 from django.db import transaction
 
 from rest_framework.response import Response
 from rest_framework import status
+
+import datetime
 
 
 class PurchaseOrderView(AuthenticatedAPIView):
@@ -156,10 +160,33 @@ class PurchaseOrderDetailView(AuthenticatedDetailAPIView):
                         if serializer.is_valid():
                             status_po = PurchaseOrderStatusServices.get(serializer.validated_data['status'].id)
                             if status_po.name == 'Concluída':
+                                # Adding product quantity if the PO is finished
+                                total_value = 0
                                 for product_aux in order.products.all():
                                     product = ProductServices.get(product_aux.product.id)
                                     product.quantity += product_aux.quantity
                                     product.save()
+                                    product_value = product_aux.quantity * product_aux.price
+
+                                    total_value += product_value
+
+                                # Adding a financial entry if the PO is finished
+                                financial_entry_serializer = FinancialEntrySerializer(
+                                    data={
+                                        'responsible': request.user.id,
+                                        'entry_type': 'D',
+                                        'entry_date': datetime.date.today(),
+                                        'description': f'Entrada de débito criada para a ordem de compra {id}',
+                                        'origin': id,
+                                        'value': total_value
+                                    }
+                                )
+
+                                if financial_entry_serializer.is_valid():
+                                    financial_entry_serializer.save()
+                                else:
+                                    return Response(financial_entry_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
                             serializer.save()
                         else:
                             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -177,8 +204,8 @@ class PurchaseOrderDetailView(AuthenticatedDetailAPIView):
         except DataBaseException:
             return Response({'message':'unexpected database error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         
-        except Exception:
-            return Response({'message':'unexpected error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception as e:
+            return Response({'message':f'unexpected error: {e}'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class ProductPurchaseSummaryView(AuthenticatedAPIView):
