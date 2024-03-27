@@ -17,6 +17,7 @@ urlpatterns = [
     path('supplier', include('supplier.urls'), name='supplier_app'),
     path('purchase-order', include('purchase_order.urls'), name='purchase_order_app'),
     path('notification', include('notification.urls'), name='notification_app'),
+    path('financial', include('financial.urls'), name='financial_app'),
 ]
 
 urlpatterns += [

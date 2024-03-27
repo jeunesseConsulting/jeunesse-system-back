@@ -12,6 +12,8 @@ from product.services.product import ProductServices
 
 from status.services.status import StatusServices
 
+from financial.serializer import FinancialEntrySerializer
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -208,6 +210,7 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
                 if serializer.is_valid():
                     status_os = StatusServices.get(serializer.validated_data['status'].id)
                     if status_os.name == 'Concluída':
+                        # Set products quantity if the os is finished
                         for product_aux in order.products.all():
                             product = ProductServices.get(product_aux.product.id)
                             old_qty = product.quantity
@@ -221,6 +224,7 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
                                 })
                             else:
                                 product.save()
+
                     serializer.save()
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -229,6 +233,23 @@ class ServiceOrderDetailView(AuthenticatedDetailAPIView):
             response_serializer = self.model_serializer(new_order)
 
             if new_order.status.name == 'Concluída':
+                # Adding a financial entry if the os is finished
+                financial_entry_serializer = FinancialEntrySerializer(
+                    data={
+                            'responsible': request.user.id,
+                            'entry_type': 'C',
+                            'entry_date': datetime.date.today(),
+                            'description': f'Entrada de crédito criada para a ordem de serviço {id}',
+                            'origin': id,
+                            'value': new_order.services_total_value + new_order.products_total_value
+                        }
+                    )
+
+                if financial_entry_serializer.is_valid():
+                    financial_entry_serializer.save()
+                else:
+                    return Response(financial_entry_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
                 schedule.every(1).seconds.do(lambda: asyncio.run(SendNotification.send_finished_order_notification(order.id)))
 
             if new_order.status.name == 'Cancelada':

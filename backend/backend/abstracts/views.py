@@ -79,6 +79,9 @@ class AuthenticatedDetailAPIView(APIView):
         except DataBaseException:
             return Response({'message':'unexpected database error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         
+        except Exception:
+            return Response({'message':'unexpected error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        
     def delete(cls, _, id):
         try:
             obj = cls.model_service.get(id)
@@ -91,4 +94,7 @@ class AuthenticatedDetailAPIView(APIView):
         
         except DataBaseException:
             return Response({'message':'unexpected database error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        
+        except Exception:
+            return Response({'message':'unexpected error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
